@@ -1,67 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CallyWorld
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+CallyWorld is an online marketplace for calligraphy art. Calligraphers open a shop and list their pieces, buyers browse, rate and order them, couriers deliver the orders, and an admin moderates the whole platform.
 
-## About Laravel
+Built with Laravel 9, MySQL and Bootstrap.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![CallyWorld homepage](docs/screenshots/home.png)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Buyers**
+- Browse products by category and search
+- Product pages with sizes, prices, discounts, ratings and comments
+- Wishlist, shopping cart and checkout (cash on delivery or card through Stripe)
+- Rate products and artists, follow artists, report artists
+- E-mail account verification
 
-## Learning Laravel
+**Artists (suppliers)**
+- Personal dashboard to add, edit and delete products, set stock and promotions
+- Upload short videos of their work for the "Watch" feed
+- Manage incoming orders: confirm, mark ready, or cancel
+- Sales statistics, followers, and reporting or blocking abusive buyers
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Couriers**
+- Separate login to see assigned deliveries and accept or decline them
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Admin**
+- Dashboard with platform totals
+- Manage suppliers, clients, products, categories, comments and ratings
+- Track carts and orders, set delivery dates, send reminders to sellers
+- Review user reports
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Screenshots
 
-## Laravel Sponsors
+| Product page | Artist dashboard |
+|---|---|
+| ![Product page](docs/screenshots/product.png) | ![Artist dashboard](docs/screenshots/artist-dashboard.png) |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+![Admin dashboard](docs/screenshots/admin-dashboard.png)
 
-### Premium Partners
+## Tech stack
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Backend:** PHP 8, Laravel 9 (Eloquent, Blade, middleware, mail)
+- **Database:** MySQL / MariaDB with Laravel migrations and seeders
+- **Frontend:** Blade templates, Bootstrap 5, jQuery (AJAX), Chart.js
+- **Payments:** Stripe PHP SDK
 
-## Contributing
+## Getting started
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Requirements
 
-## Code of Conduct
+- PHP 8.0.2 or newer (tested with PHP 8.2) with the `pdo_mysql`, `fileinfo` and `openssl` extensions
+- [Composer](https://getcomposer.org/download/)
+- MySQL or MariaDB (XAMPP works fine on Windows)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Node.js is not needed: the compiled front-end assets are committed in `public/build`.
 
-## Security Vulnerabilities
+### Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+git clone https://github.com/bilalkaderi/CallyWorld.git
+cd CallyWorld
 
-## License
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# CallyWorld" 
+Create an empty database named `callyworld`. If your MySQL user or password differs from `root` with no password, update the `DB_*` values in `.env`. Then run:
+
+```bash
+php artisan migrate --seed
+php artisan serve
+```
+
+Open http://127.0.0.1:8000.
+
+### Demo accounts
+
+The seeder creates these accounts. The password for all of them is `password`.
+
+| Role | Login | Where to sign in |
+|---|---|---|
+| Admin | `admin@callyworld.test` | `/login` |
+| Artist | `artist@callyworld.test` | `/login` |
+| Buyer | `buyer@callyworld.test` | Sign-in form on the homepage |
+| Courier | `courier` (username) | `/delivery/login` |
+
+The seeder can be run again (`php artisan db:seed`) without creating duplicates.
+
+### Optional configuration
+
+- **E-mail:** by default, verification e-mails are written to `storage/logs/laravel.log` instead of being sent. Set the `MAIL_*` values in `.env` to send real mail.
+- **Card payments:** add your Stripe test keys as `STRIPE_KEY` and `STRIPE_SECRET` in `.env`. Everything else works without them.
+
+## Project structure
+
+```
+app/Http/Controllers/   AdminController, UserController (artists), ClientController (buyers),
+                        DeliveryController, PaymentController, HomeController, CustomAuthController
+app/Models/             Eloquent models (Product, Cart, Order, Client, User, ...)
+database/migrations/    Database schema
+database/seeders/       Demo data
+resources/views/        Blade templates (admin/, auth/, delivery/, storefront pages)
+routes/web.php          All web routes
+```
+
+## Roadmap
+
+- Replace raw SQL queries with Eloquent or query bindings
+- Move data access out of Blade views into controllers
+- Protect state-changing GET routes with POST and CSRF
+- Add feature tests for the order and checkout flow
+
+## Author
+
+Bilal Kaderi
