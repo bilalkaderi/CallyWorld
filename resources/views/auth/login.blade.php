@@ -31,6 +31,13 @@
     <center>
           <br/><hr style="color:#bba174"><div style="background-color:brown"><hr></div>
           <h2 class="text-center" style="color:#bba174;font-family:Tangerine_Regular;font-size:100px">Cally Home</h2>
+          @if($errors->any())
+            <div class="alert alert-danger" style="width:40%;">
+              @foreach($errors->all() as $error)
+                <div>{{ $error }}</div>
+              @endforeach
+            </div>
+          @endif
           @if(session()->has('notverified'))
             <div class="alert alert-danger" style="width:30%;">
                 {{ session()->get('notverified') }}
