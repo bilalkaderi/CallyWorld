@@ -56,6 +56,17 @@ class DatabaseSeeder extends Seeder
             'updated_at' => $now,
         ]);
 
+        // Couriers log in at /delivery/login with a username.
+        // DeliveryController still compares plain-text passwords, so this one is not hashed yet.
+        $this->findOrInsert('deliveryman', 'username', [
+            'username' => 'courier',
+            'name' => 'Demo Courier',
+            'password' => 'password',
+            'phone' => '+10000000004',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
         $categories = [];
         foreach (['Arabic', 'Modern', 'Framed'] as $name) {
             $categories[$name] = $this->findOrInsert('categories', 'name', [
