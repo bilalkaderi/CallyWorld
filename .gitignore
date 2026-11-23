@@ -1,0 +1,43 @@
+# Dependencies
+/node_modules
+/vendor
+
+# Environment
+.env
+.env.backup
+.phpunit.result.cache
+
+# IDE / OS
+/.vs
+/.idea
+/.vscode
+Thumbs.db
+.DS_Store
+
+# Laravel runtime files
+/public/hot
+/public/storage
+/storage/*.key
+/bootstrap/cache/*.php
+
+# User uploads (kept out of git; demo images live in public/img/demo)
+/public/img/*
+!/public/img/demo/
+!/public/img/check.png
+!/public/img/edit.png
+!/public/img/profile.png
+/public/profiles/*
+!/public/profiles/.gitkeep
+/public/videos/*
+!/public/videos/.gitkeep
+
+# Personal documents that ended up in public/css
+/public/css/*.docx
+/public/css/vendor/*.txt
+
+# Scratch files
+/user.html
+/public/demo.txt
+
+npm-debug.log
+yarn-error.log
