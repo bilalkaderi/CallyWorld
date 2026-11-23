@@ -16,7 +16,7 @@
 <head>
 </head>
 @php
-  $subscribers=json_decode($user->subscribers, true);
+  $subscribers=json_decode($user->subscribers ?? '[]', true) ?? [];
   $followers=count($subscribers);
 @endphp
 @if($subscribers)

@@ -9,7 +9,7 @@
           left join product on orders.productId=product.id where orders.visible='yes' and orders.userId=$id and orders.created_at >= NOW() - INTERVAL 300 DAY order by orders.id desc");
 
     $ordersNb=DB::table('orders')->where('userId','=',$id)->where('status','=','pending')->count();
-    $subscribers=json_decode($user->subscribers, true);
+    $subscribers=json_decode($user->subscribers ?? '[]', true) ?? [];
     $followers=count($subscribers);
 @endphp
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
