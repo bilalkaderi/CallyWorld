@@ -2,11 +2,11 @@
     $dt=now()->format('Y-m-d H:i:s');
     $user = DB::table('users')->where('email','=',Auth::user()->email)->first();
     $id=Auth::user()->id;
-    $userprod = DB::select("select * from product where userId=$id");
+    $userprod = DB::select("select * from product where userId = ?", [$id]);
     $orders = DB::select("select orders.id,orders.productId,orders.clientId,orders.total_price,orders.quantity,orders.status,orders.created_at,orders.expecting_delivery_date,
     product.id as productId,product.name,product.photo,product.promotion,product.stock,product.expecting_delivery_time,product.name as pname,product.price,client.name as cname,client.phone from orders
           left join client on orders.clientId=client.id
-          left join product on orders.productId=product.id where orders.visible='yes' and orders.userId=$id and orders.created_at >= NOW() - INTERVAL 300 DAY order by orders.id desc");
+          left join product on orders.productId=product.id where orders.visible='yes' and orders.userId = ? and orders.created_at >= NOW() - INTERVAL 300 DAY order by orders.id desc", [$id]);
 
     $ordersNb=DB::table('orders')->where('userId','=',$id)->where('status','=','pending')->count();
     $subscribers=json_decode($user->subscribers ?? '[]', true) ?? [];
@@ -1509,7 +1509,7 @@
 
             @php
               $prodNum=DB::table('product')->where('userId','=',$id)->count();
-              $sales=DB::select("select sum(price*soldno) as sales from product where userId=$id");@endphp
+              $sales=DB::select("select sum(price*soldno) as sales from product where userId = ?", [$id]);@endphp
         </div>
         <div class='info' id="stockData">
                <p><span>You have {{$prodNum}} products shared here.</span></p>

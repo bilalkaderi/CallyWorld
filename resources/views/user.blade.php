@@ -1,13 +1,12 @@
 @php
     $dt=now()->format('Y-m-d H:i:s');
-    $user = DB::select("select * from users where email='Auth::user()->email'");
     $id=Auth::user()->id;
-    $userprod = DB::select("select * from product where userId=$id");
+    $userprod = DB::select("select * from product where userId = ?", [$id]);
     $orders = DB::select("select orders.id,orders.productId,orders.clientId,orders.total_price,orders.quantity,orders.status,product.name,product.photo,product.name as pname,product.price,client.name as cname,client.phone from orders
           left join client on orders.clientId=client.id
-          left join product on orders.productId=product.id where orders.userId=$id and orders.created_at >= NOW() - INTERVAL 7 DAY");
+          left join product on orders.productId=product.id where orders.userId = ? and orders.created_at >= NOW() - INTERVAL 7 DAY", [$id]);
 
-    $messages=DB::select("select message.message,client.name from message left join client on message.clientId=client.id where message.userId=$id");
+    $messages=DB::select("select message.message,client.name from message left join client on message.clientId=client.id where message.userId = ?", [$id]);
     $messNb=DB::table('message')->where('userId','=',$id)->count();
 @endphp
   <head>
@@ -359,7 +358,7 @@
 
                     @php
                       $prodNum=DB::table('product')->where('userId','=',$id)->count();
-                      $sales=DB::select("select sum(price*soldno) as sales from product where userId=$id");@endphp
+                      $sales=DB::select("select sum(price*soldno) as sales from product where userId = ?", [$id]);@endphp
                     </div>
                      <div class='info'>
                        <p><span>You have {{$prodNum}} products shared here.</span></p>

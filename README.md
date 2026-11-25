@@ -107,7 +107,6 @@ routes/web.php          All web routes
 
 ## Roadmap
 
-- Replace raw SQL queries with Eloquent or query bindings
 - Move data access out of Blade views into controllers
 - Protect state-changing GET routes with POST and CSRF
 - Add feature tests for the order and checkout flow

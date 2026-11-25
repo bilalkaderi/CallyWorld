@@ -4,7 +4,7 @@
 
   $orders=DB::select("select cart.id, cart.clientId,cart.items,cart.status,cart.total_amount,cart.expecting_delivery_date,cart.created_at,
   cart.updated_at,cart.payment_method,cart.pref_address,cart.delivery_details,cart.delivery_hour,cart.delivery_response,client.name,client.phone
-  from cart inner join client on cart.clientId=client.id where delivery_details= $dman->id order by cart.id desc");
+  from cart inner join client on cart.clientId=client.id where delivery_details = ? order by cart.id desc", [$dman->id]);
 
   $count=DB::table("cart")->where("delivery_details","=",$dman->id)->where("status","=","On Delivery")->count();
 @endphp

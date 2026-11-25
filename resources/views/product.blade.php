@@ -522,11 +522,11 @@
               <div id="alert" style="border:0.11rem solid white;border-radius:5px;background-color:white;padding:5px;padding:30px">
                 <table align='right' style="font-size:22px;" id="tablecomments">
                 @php
-                  $comments=DB::select("select * from comment where productId=$product->id order by id desc");
+                  $comments=DB::select("select * from comment where productId = ? order by id desc", [$product->id]);
                 @endphp
                 @foreach($comments as $comments)
                   @php
-                    $clients=DB::select("select * from client where id=$comments->clientId");
+                    $clients=DB::select("select * from client where id = ?", [$comments->clientId]);
                   @endphp
                   <tr id="comment_{{$comments->id}}"><th style="padding:5px 40px">@foreach($clients as $clients){{$clients->name}}@endforeach</th>
                       <td style="padding:5px 40px">{{$comments->comment}}</td>

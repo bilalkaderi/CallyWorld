@@ -18,8 +18,8 @@ class UserController extends Controller
   public function index()
   {
         $userid = Auth::user()->id;
-        $userprod = DB::select("select * from product where userId=$userid");
-        $userdata = DB::select("select * from users where id=$userid");
+        $userprod = DB::table('product')->where('userId', $userid)->get();
+        $userdata = DB::select("select * from users where id = ?", [$userid]);
        return view('user2',['userprod'=>$userprod,'userdata'=>$userdata]);
   }
 
@@ -233,8 +233,8 @@ class UserController extends Controller
                 orders.status,orders.created_at,product.id as productid,product.photo,product.name as pname,product.price,
                 client.name as cname,client.phone from orders
             left join client on orders.clientId=client.id
-            left join product on orders.productId=product.id where orders.userId= $id
-            order by orders.created_at desc");
+            left join product on orders.productId=product.id where orders.userId = ?
+            order by orders.created_at desc", [$id]);
         $ordersnb=DB::table('orders')->where('userId','=',$id)->where('status','=','pending')->count();
         return view('allOrders',['orders'=>$orders,'ordersnb'=>$ordersnb]);
 

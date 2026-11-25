@@ -84,7 +84,7 @@ function deleteComment(id){
               @foreach($comments as $c)
               @php
                 $id=$c->clientId;
-                $username=DB::select("select * from client where id=$id");
+                $username=DB::select("select * from client where id = ?", [$id]);
               @endphp
                 <tr id="comment_{{$c->id}}">
                   <th scope="row">{{$c->id}}</th>
