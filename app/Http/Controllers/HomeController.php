@@ -34,11 +34,9 @@ class HomeController extends Controller
         $clientemail = session()->get('clientemail');
         $email = session()->get('email');
 
-        $user = DB::select("select * from users where email='$email'");
-        $userid = DB::select("select id from users where email='$email'");
-
-        $client = DB::select("select * from client where email='$clientemail'");
-        $clientid = DB::select("select id from client where email='$clientemail'");
+        // The view expects one-row arrays (or empty arrays when nobody is logged in).
+        $user = DB::table('users')->where('email', $email)->get()->all();
+        $client = DB::table('client')->where('email', $clientemail)->get()->all();
 
         $prod=DB::table('product')
           ->where(function ($query) {

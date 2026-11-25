@@ -17,8 +17,8 @@ class CustomAuthController extends Controller
     {
         if (session()->has('email') && session()->has('password')) {
           $email=Session::get('email');
-          $user = DB::select("select * from users where email='$email'");
-          $userprod = DB::select("select * from product where userId=$user->id");
+          $user = DB::table('users')->where('email', $email)->first();
+          $userprod = DB::table('product')->where('userId', $user->id)->get();
           return view('user2',['userprod'=>$userprod]);
         }
         return view('auth.login');

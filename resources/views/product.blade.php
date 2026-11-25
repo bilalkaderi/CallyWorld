@@ -1,6 +1,6 @@
 @php
   $clientemail=session()->get('clientemail');
-  $clientId = DB::select("select * from client where email='$clientemail'");
+  $clientId = DB::table('client')->where('email', $clientemail)->get()->all();
 @endphp
   <head>
     <meta charset="utf-8">

@@ -1,7 +1,7 @@
 @include('admin.bars.tops')
 @php
   $clientemail=session()->get('clientemail');
-  $clientId = DB::select("select * from client where email='$clientemail'");
+  $clientId = DB::table('client')->where('email', $clientemail)->get()->all();
 
   $id=$user->id;
   $nbPro=DB::table('product')->where('userId','=',$id)->count();
