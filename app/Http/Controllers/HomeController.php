@@ -56,8 +56,8 @@ class HomeController extends Controller
         $product = DB::select("select product.id,product.name,product.userId,product.photo,product.price,product.promotion,product.width,product.height,product.description,product.categoryId,product.stock,
         users.name as username,categories.name as type from product
         left join users on product.userId=users.id
-        left join categories on product.categoryId=categories.id where product.id=$request->id");
-        // $user= DB::select("select * from users where id=$product->userId");
+        left join categories on product.categoryId=categories.id where product.id=?",[ $request->id ]);
+
         if($product != null)
           return view ('product',['product'=>$product]);
         else

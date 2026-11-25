@@ -500,7 +500,10 @@ class ClientController extends Controller
       session(['items' => $items]);
       Session::save();
 
-      $p=DB::select("select * from product where id=$id");
+      $p=DB::table('product')->where('id', $id)->first();
+      if(!$p){
+        abort(404);
+      }
 
       $price=$p->price;
       $prom=$p->promotion;

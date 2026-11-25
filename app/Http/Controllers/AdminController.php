@@ -384,7 +384,7 @@ public function changePasswordUserAdmin(Request $request)
                 <tr><td>$u->reported times reported</td></tr>
                 <tr><td>Joined on $u->created_at</td></tr>
             </table>";
-              $r = DB::select("select * from report where report.to LIKE '%user: $request->id%'");
+              $r = DB::table('report')->where('to', 'LIKE', '%user: '.$request->id.'%')->get();
               $table='';
               if($r!=null){
                 foreach($r as $r){
@@ -407,7 +407,7 @@ public function changePasswordUserAdmin(Request $request)
         				<tr><td>$c->email</td></tr>
                 <tr><td>Joined on $c->created_at</td></tr>
             </table>";
-              $r = DB::select("select * from report where report.to LIKE '%client: $request->id%'");
+              $r = DB::table('report')->where('to', 'LIKE', '%client: '.$request->id.'%')->get();
               $table='';
               if($r!=null){
                 foreach($r as $r){
