@@ -1,572 +1,338 @@
-@include('admin.bars.tops')
 @php
   $clientemail=session()->get('clientemail');
   $clientId = DB::table('client')->where('email', $clientemail)->get()->all();
+  $client = $clientId[0] ?? null;
 
   $id=$user->id;
   $nbPro=DB::table('product')->where('userId','=',$id)->count();
   $count=DB::table('rate')->where('userId','=',$id)->count();
   $sum=DB::table('rate')->where('userId','=',$id)->sum('rate');
-  if($count>0){
-    $ratings=round($sum/$count,'1');
-  }
-  else{$ratings=0;}
+  $ratings = $count > 0 ? round($sum/$count, 1) : 0;
 
-@endphp
-<head>
-</head>
-@php
   $subscribers=json_decode($user->subscribers ?? '[]', true) ?? [];
   $followers=count($subscribers);
-@endphp
-@if($subscribers)
-  @foreach($subscribers as $s)
-    @if(session()->has('clientemail'))
-      @foreach($clientId as $c)
-        @if($s == $c->id)
-          @php $subscribed='yes'; @endphp
-        @else
-          @php $subscribed='no'; @endphp
-        @endif
-      @endforeach
-    @else
-      @php $subscribed='no'; @endphp
-    @endif
-  @endforeach
-@else
-  @php
-   $subscribed='no';
-  @endphp
-@endif
+  $subscribed = ($client && in_array($client->id, $subscribers)) ? 'yes' : 'no';
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<meta name="_token" content="{{csrf_token()}}">
-<script type="text/javascript">
+  $products=DB::table('product')
+    ->select('id','name','photo','price','promotion','width','height')
+    ->where('userId','=',$id)
+    ->get();
+
+  $photo = $user->photo && file_exists(public_path('profiles/'.$user->photo))
+    ? asset('profiles/'.$user->photo)
+    : asset('img/profile.png');
+@endphp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="_token" content="{{csrf_token()}}">
+  <title>{{ $user->name }} · CallyWorld</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
     $(document).ready(function(){
       $("#closemodal").click(function(){
         $("#modalAlert").fadeOut();
       });
 
       $(".ratingrb").click(function(){
-          $.ajaxSetup({
-              headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-            });
-
-          var form_data = new FormData();
-          form_data.append("userid", $('#userid').val());
-          form_data.append("clientid", $('#clientid').val());
-          form_data.append("rating", $(this).val());
-          $.ajax({
-              url:"{{ route('rateUser') }}",
-              method:'post',
-              data:form_data,
-              contentType: false, //multipart/form-data
-              processData: false,
-              success: function(output){
-                $("#ratingvalue").text('');
-                $("#ratingvalue").text(output.ratings);
-                  //$(".alert").html(output.success);
-             }
-          });
+        $.ajaxSetup({
+          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+        });
+        var form_data = new FormData();
+        form_data.append("userid", $('#userid').val());
+        form_data.append("clientid", $('#clientid').val());
+        form_data.append("rating", $(this).val());
+        $.ajax({
+          url:"{{ route('rateUser') }}",
+          method:'post',
+          data:form_data,
+          contentType: false,
+          processData: false,
+          success: function(output){
+            $("#ratingvalue").text(output.ratings);
+          }
+        });
       });
-
-
 
       $("#subscribe").click(function(){
-          $.ajaxSetup({
-              headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-            });
-
-          var form_data = new FormData();
-          form_data.append("userid",$('#userid').val());
-          form_data.append("clientid",$('#clientid').val());
-          // var clientid=$('#clientid').val();
-
-          $.ajax({
-              url:"{{ route('subscribe') }}",
-              method:'post',
-              data:form_data,
-              contentType: false, //multipart/form-data
-              processData: false,
-              success: function(output){
-                $("#modalbody").text('');
-                $("#modalbody").append(output.success);
-                $("#modalAlert").fadeIn();
-                $("#subscribe").fadeOut();
-                // $("#modalfooter").text('');
-             }
-          });
+        $.ajaxSetup({
+          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+        });
+        var form_data = new FormData();
+        form_data.append("userid",$('#userid').val());
+        form_data.append("clientid",$('#clientid').val());
+        $.ajax({
+          url:"{{ route('subscribe') }}",
+          method:'post',
+          data:form_data,
+          contentType: false,
+          processData: false,
+          success: function(output){
+            $("#modalbody").text(output.success);
+            $("#modalAlert").fadeIn();
+            $("#subscribe").fadeOut();
+          }
+        });
       });
-
-      $("#toggleNavBar").click(function(){
-        $(".navbar-collapse").toggle();
-      });
-
 
       $("#unsubscribe").click(function(){
-          $.ajaxSetup({
-              headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-            });
-
-          var form_data = new FormData();
-          form_data.append("userid",$('#userid').val());
-          form_data.append("clientid",$('#clientid').val());
-          // var clientid=$('#clientid').val();
-
-          $.ajax({
-              url:"{{ route('unsubscribe') }}",
-              method:'post',
-              data:form_data,
-              contentType: false, //multipart/form-data
-              processData: false,
-              success: function(output){
-                $("#modalbody").text('');
-                $("#modalbody").append(output.success);
-                $("#modalAlert").fadeIn();
-                $("#unsubscribe").fadeOut();
-
-                // $("#modalfooter").text('');
-             }
-          });
+        $.ajaxSetup({
+          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+        });
+        var form_data = new FormData();
+        form_data.append("userid",$('#userid').val());
+        form_data.append("clientid",$('#clientid').val());
+        $.ajax({
+          url:"{{ route('unsubscribe') }}",
+          method:'post',
+          data:form_data,
+          contentType: false,
+          processData: false,
+          success: function(output){
+            $("#modalbody").text(output.success);
+            $("#modalAlert").fadeIn();
+            $("#unsubscribe").fadeOut();
+          }
+        });
       });
-
 
       $("#first-report").click(function(){
-        $(".report").toggle();
+        $(".report").hide();
         $(".reason-report").fadeIn();
       });
-
-      $("#moreProducts").click(function(){
-        $("#modalProducts").fadeIn();
-      });
-      $("#closemodalProducts").click(function(){
-        $("#modalProducts").fadeOut();
+      $("#cancel-block").click(function(){
+        $(".block").fadeOut();
       });
     });
 
     function report(id){
       $.ajaxSetup({
-          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
       });
-      var clientid= $('#clientid').val();
-      var reportmessage= $('#reportmessage').val();
-
       var form_data = new FormData();
       form_data.append("id", id);
-      form_data.append("clientid", clientid);
-      form_data.append("reportmessage", reportmessage);
-        $.ajax({
-            url:"{{ route('reportUser') }}",
-            method:'post',
-            data: form_data,
-            contentType: false, //multipart/form-data
-            processData: false,
-            success: function(output){
-                $(".reason-report").toggle();
-                $(".block").prepend(output.success);
-                $(".block").fadeIn();
-              }
-            });
+      form_data.append("clientid", $('#clientid').val());
+      form_data.append("reportmessage", $('#reportmessage').val());
+      $.ajax({
+        url:"{{ route('reportUser') }}",
+        method:'post',
+        data: form_data,
+        contentType: false,
+        processData: false,
+        success: function(output){
+          $(".reason-report").hide();
+          $(".block-message").text(output.success);
+          $(".block").fadeIn();
         }
+      });
+    }
 
-        function block(id){
-          $.ajaxSetup({
-              headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-          });
-          var clientid= $('#clientid').val();
+    function block(id){
+      $.ajaxSetup({
+        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+      });
+      var form_data = new FormData();
+      form_data.append("id", id);
+      form_data.append("clientid", $('#clientid').val());
+      $.ajax({
+        url:"{{ route('blockUser') }}",
+        method:'post',
+        data: form_data,
+        contentType: false,
+        processData: false,
+        success: function(output){
+          window.location.href = "{{route('home')}}";
+        }
+      });
+    }
 
-          var form_data = new FormData();
-          form_data.append("id", id);
-          form_data.append("clientid", clientid);
-            $.ajax({
-                url:"{{ route('blockUser') }}",
-                method:'post',
-                data: form_data,
-                contentType: false, //multipart/form-data
-                processData: false,
-                success: function(output){
-                  window.location.href = "{{route('home')}}";
-                  }
-                });
-            }
+    function sendEmail(id){
+      $.ajaxSetup({
+        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+      });
+      var form_data = new FormData();
+      form_data.append("to",$('#to').val());
+      form_data.append("clientname",$('#emailname').val());
+      form_data.append("clientemail",$('#email').val());
+      form_data.append("subject",$('#subject').val());
+      form_data.append("message",$("#message").val());
+      $.ajax({
+        url:"{{ route ('sendEmail') }}",
+        method:'post',
+        data:form_data,
+        contentType: false,
+        processData: false,
+        success: function(output){
+          $("#message").val('');
+          $("#subject").val('');
+          $("#thanks").fadeIn();
+        }
+      });
+    }
+  </script>
+  <style>
+    .avatar { width: 112px; height: 112px; object-fit: cover; }
+    .product-img, .product-img-empty { height: 200px; object-fit: cover; }
+    .rating { display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+    .rating input { display: none; }
+    .rating label { font-size: 1.4rem; line-height: 1; color: #d1d5db; cursor: pointer; }
+    .rating label:hover, .rating label:hover ~ label,
+    .rating input:checked ~ label { color: #f59e0b; }
+    .reason-report, .block, #thanks { display: none; }
+  </style>
+</head>
+<body>
 
-
-            function sendEmail(id){
-                $.ajaxSetup({
-                    headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-                  });
-
-                var form_data = new FormData();
-                form_data.append("to",$('#to').val());
-                form_data.append("clientname",$('#emailname').val());
-                form_data.append("clientemail",$('#email').val());
-                form_data.append("subject",$('#subject').val());
-                form_data.append("message",$("#message").val());
-                $.ajax({
-                  url:"{{ route ('sendEmail') }}",
-                    method:'post',
-                    data:form_data,
-                    contentType: false, //multipart/form-data
-                    processData: false,
-                    success: function(output){
-                      $("#message").val('');
-                      $("#subject").val('');
-                      // $("#subject").append(output.success);
-                      $("#thanks").fadeIn();
-                   }
-                });
-            }
-
-            function remind(id){
-              $.ajaxSetup({
-                  headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-              });
-              $.ajax({
-                url:"{{route('remind')}}",
-                  method:'POST',
-                  data: {id:id},
-                  success: function(output){
-                    $("#mailSuccess").text('');
-                    $("#mailSuccess").append(output.success);
-                      $("#mailSuccess").fadeIn();
-                    }
-            });
-            }
-
-</script>
-<link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
-<style media="screen">
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap');
-*{
-  font-family: 'Poppins', sans-serif;
-}
-</style>
-<body style="background-color:rgb(245,245,255)">
-
-  <div class="modal" id="modalAlert" tabindex="-1" style="">
-  <div class="modal-dialog">
+<div class="modal" id="modalAlert" tabindex="-1" style="background:rgba(0,0,0,.3)">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+      <div class="modal-body" id="modalbody"></div>
+      <div class="modal-footer">
+        <button type="button" id="closemodal" class="btn btn-light">Close</button>
       </div>
-      <div class="modal-body" id="modalbody">
+    </div>
+  </div>
+</div>
 
-      </div>
-      <div class="modal-footer" >
-        <button type="button" id="closemodal" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <div id="modalfooter">
-          <button type="button" class="btn btn-primary" name="button">kj</button>
+<nav class="navbar bg-white border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+      <img src="{{ asset('css/icons/pen.png') }}" width="32" height="32" alt="">
+      <span class="fw-semibold">CallyWorld</span>
+    </a>
+    <div class="d-flex gap-1">
+      <a class="nav-link px-2" href="{{ route('home') }}">Shop</a>
+      @if($client)
+        <a class="nav-link px-2" href="{{ route('cart') }}">Cart</a>
+      @endif
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4 py-lg-5">
+  <button id="userid" style="display:none" value="{{ $user->id }}" disabled></button>
+  @if($client)
+    <button id="clientid" style="display:none" value="{{ $client->id }}" disabled></button>
+  @endif
+
+  <div class="cw-panel mb-5">
+    <div class="d-flex flex-column flex-md-row gap-4 align-items-md-center">
+      <img src="{{ $photo }}" alt="{{ $user->name }}" class="avatar rounded-circle border">
+      <div class="flex-grow-1">
+        <h1 class="h3 mb-1">{{ $user->name }}</h1>
+        <p class="text-muted mb-3">{{ $user->aboutme ?: 'Calligrapher on CallyWorld.' }}</p>
+        <div class="d-flex gap-4 small">
+          <div><span class="fw-semibold fs-5">{{ $followers }}</span> <span class="text-muted">followers</span></div>
+          <div><span class="fw-semibold fs-5">{{ $nbPro }}</span> <span class="text-muted">products</span></div>
+          <div><span class="fw-semibold fs-5">{{ $ratings }}</span> <span class="text-muted">rating</span></div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-<div class="modal" id="modalProducts" tabindex="-1" style="width:100%;position:absolute">
-<div class="modal-dialog" style="width:100%">
-  <center>
-  <div class="modal-content" style="width:200rem;margin-left:-160px">
-    <div class="modal-header">
-      <h5 class="modal-title">Products</h5>
-    </div>
-    <div class="modal-body"  id="modalProducts">
-      @php
-        $products=DB::table('product')
-          ->select('product.id','product.name','product.photo','product.description','product.price','product.width','product.height')
-          ->where('userId','=',$user->id)
-          ->get();
-      @endphp
-      <table class="" style="">
-        <tr>
-        @foreach($products as $p)
-          <td>
-          <div class='box' style="">
-              <div class='front' style='border-radius:50px'>
-                @if($p->photo !=null && file_exists(public_path()."/img/$p->photo"))
-                  <img src="{{asset('img/'.$p->photo)}}" style='width:300px;height:240px;border-radius:20px' alt='' id="">
-                @else
-                  <h2 style="font-size:20px">No Preview Photo</h2>
-                @endif
 
-              </div>
-              <div class='back'>
-                <a href="/product/{{$p->id}}" style='font-size:30px;color:#8e221a;padding:0 0 0 0;font-style:italic' id='iname'><b>{{$p->name}}</b></a>
-                <br>
-                <p><b>Size:</b> {{$p->height}} x {{$p->width}}<br></p>
-                <p><strong>{{$p->price}}$</strong></p>
-              </div>
-            </div>
-          </td>
-          @if($loop->iteration % 2 == 0)
-            </tr><tr>
-          @endif
-          @endforeach
-      </table>
-    </div>
-    <div class="modal-footer" >
-      <button type="button" id="closemodalProducts" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    </div>
-  </div>
-</div>
-</div>
-</center>
-<header id="header" style="position: fixed;width:100%;z-index: 1000;top:0;">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light" >
-       <div class="container" >
-           <button class="navbar-toggler" id="toggleNavBar" type="button" data-bs-toggle="collapse" data-bs-target="#mynav"
-               aria-controls="mynav" aria-expanded="false" aria-label="Toggle navigation">
-               <span class="navbar-toggler-icon"></span>
-           </button>
-           <a class="navbar-brand" href="#">
-               <div class="d-flex">
-                   <div class="d-flex align-items-center logo bg-white">
-                     <img src="{{asset('css/icons/pen.png')}}" style="width:44px;height:46px">
-                   </div>
-                   <div class="ms-3 d-flex flex-column">
-                     <div class="h4">{{$user->name}}</div>
-                       <div class="fs-6">Profile</div>
-                   </div>
-               </div>
-           </a>
-           <div class="collapse navbar-collapse" id="mynav">
-               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                   <li class="nav-item">
-                       <a class="nav-link active" aria-current="page" href="{{route('home')}}">Homepage
-                         <span class="fas fa-th-large px-1"></span></a>
-                   </li>
-                   <li class="nav-item">
-                     @if(session()->has('clientemail'))
-                     @if($subscribed=='no')
-                        <a class="nav-link" id="subscribe" style="cursor:pointer">Follow</a>
-                      @else
-                        <a class="nav-link" id="unsubscribe" style="cursor:pointer">Unfollow</a>
-                      @endif
-                      @endif
-                   </li>
-
-                   @if(session()->has('clientemail'))
-                   <li class="nav-item">
-                       <form action="post">
-                         <div class="alerts" style="display:none" ></div>
-                         <table width="100%">
-                           <tr>
-                            <td style="text-align:center">
-                             <div class="form-group">
-                               <div class="report">
-                                 <a  class="nav-link" id="first-report" style="cursor:pointer">Report Supplier</a>
-                               </div>
-                               <div class="reason-report" style="display:none">
-                                 <textarea placeholder="Why reporting?" id="reportmessage" style="width:100%" class="form-control"></textarea>
-                                 <button type="button" onclick="report({{$user->id}})" class="btn btn-danger" id="last-report" style="background-color:#dc3545;color:#fff;cursor:pointer">Report</button>
-                               </div>
-                               <div class="block" style="display:none">
-                                 <h4>Do you want to block this supplier? You will be returned to homepage.</h4>
-                                 <button type="button" onclick="block({{$user->id}})" class="btn btn-info" style="background-color:#17a2b8;color:#fff;cursor:pointer">Block</button>
-                                 <button type="button" id="cancel-block" class="btn btn-light">No</button>
-                               </div>
-                             </div>
-                           </td>
-                          </tr>
-                       </table>
-                     </form>
-                   </li>
-                   @endif
-
-                   <li class="nav-item" style="float:right">
-                     <form class="" action="" method="post">
-                       @csrf
-                       <center>
-                       <a class="nav-link"><div class="ratingDiv" style="margin-top:">Rate {{$user->name}}:
-                           <div class="rating">
-                             <input type="radio" class="ratingrb" name="rating" value="5" id="5"><label for="5">☆</label>
-                             <input type="radio" name="rating" class="ratingrb" value="4" id="4"><label for="4">☆</label>
-                             <input type="radio" name="rating" class="ratingrb" value="3" id="3"><label for="3">☆</label>
-                             <input type="radio" name="rating" class="ratingrb" value="2" id="2"><label for="2">☆</label>
-                             <input type="radio" name="rating" class="ratingrb" value="1" id="1"><label for="1">☆</label>
-                           </div>
-                       </div></a>
-                     </center>
-                     </form>
-                   </li>
-               </ul>
-           </div>
-         </div>
-       </nav>
-      </div>
-    </header>
-
-
-    <center>
-        <div class="" style="float:center;margin-top:130px">
-          <div class="" style="width:650px;padding:0  30px 30px 30px; background-color:#fff; border-radius:10px; ">
-            <div class="" style="background-color:;border-radius:5px;padding:20px;">
-              <button id="userid" style="display:none" value="{{$user->id}}" disabled></button>
-              <div class="" style="width:500px; margin-top:-15px">
-                <div class="" style="background-color:#444;height:130px;border-radius:10px;">
-                  <img src="{{asset('profiles/'.$user->photo)}}" alt="" style="margin-top: 30px;width:250px;height:230px;border-radius:130px;box-shadow: 0 5px 3px rgba(0,0,0, 0.2 ), 0 -5px 5px rgba(0,0,0, 0.200);">
-                </div>
-              </div>
-              <div class="" style="margin-top:200px; ">
-                <div class="" style=" margin-left: -350px;">
-                  <h4>About</h4>
-                </div>
-                <div class="" style="background-color:rgb(240,240,240); padding: 40px; width:400px; border-radius: 5px;">
-                  <center><p style="color:black;font-weight: 600;font-size:18px">{{$user->aboutme}}</p></center>
-                </div>
-              </div>
-            </div>
-            <div class="" style=" width: 450px;display: flex;">
-              <div class="" style="flex:1;">
-                <h5>Followers</h5>
-                <p>{{$followers}}</p>
-              </div>
-              <div class="" style="flex: 1;">
-                <h5>Products</h5>
-                <p>{{$nbPro}}</p>
-              </div>
-              <div class="" style="flex: 1;">
-                <h5>Rating</h5>
-                <p>{{$ratings}}</p>
-              </div>
-            </div>
-
+      @if($client)
+        <div class="d-flex flex-column gap-2 align-items-md-end">
+          <div class="d-flex gap-2">
+            @if($subscribed == 'no')
+              <button type="button" class="btn btn-dark" id="subscribe">Follow</button>
+            @else
+              <button type="button" class="btn btn-light" id="unsubscribe">Unfollow</button>
+            @endif
+            <button type="button" class="btn btn-light report" id="first-report">Report</button>
           </div>
+          <div>
+            <span class="small text-muted me-1">Rate:</span>
+            <span class="rating align-middle">
+              @for($i = 5; $i >= 1; $i--)
+                <input type="radio" class="ratingrb" name="rating" value="{{ $i }}" id="{{ $i }}"><label for="{{ $i }}" title="{{ $i }} stars">★</label>
+              @endfor
+            </span>
+            <span id="ratingvalue" class="small text-muted ms-1"></span>
+          </div>
+        </div>
+      @endif
+    </div>
 
-          <div class="" style="display:none">
-            @if($clientId)
-            @foreach($clientId as $c)
-              <button disabled value="{{$c->id}}" id="clientid"></button>
-            @endforeach
+    @if($client)
+      <div class="reason-report border-top mt-4 pt-4">
+        <label for="reportmessage" class="form-label">Why are you reporting {{ $user->name }}?</label>
+        <textarea id="reportmessage" class="form-control mb-2" rows="2"></textarea>
+        <button type="button" onclick="report({{ $user->id }})" class="btn btn-danger" id="last-report">Send report</button>
+      </div>
+      <div class="block border-top mt-4 pt-4">
+        <p class="block-message mb-1"></p>
+        <p class="mb-2">Do you also want to block this supplier? You will be returned to the shop.</p>
+        <button type="button" onclick="block({{ $user->id }})" class="btn btn-danger">Block</button>
+        <button type="button" id="cancel-block" class="btn btn-light">No</button>
+      </div>
+    @endif
+  </div>
+
+  <h2 class="h5 mb-3">Products by {{ $user->name }}</h2>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 mb-5">
+    @forelse($products as $p)
+      @php $newprice = $p->price - (($p->promotion / 100) * $p->price); @endphp
+      <div class="col">
+        <div class="card h-100">
+          @if($p->photo && file_exists(public_path('img/'.$p->photo)))
+            <a href="/product/{{ $p->id }}"><img src="{{ asset('img/'.$p->photo) }}" class="card-img-top product-img" alt=""></a>
+          @else
+            <div class="product-img-empty bg-light d-flex align-items-center justify-content-center text-muted"><i class="bi bi-image fs-1"></i></div>
+          @endif
+          <div class="card-body">
+            @if($p->promotion > 0)<span class="badge text-bg-danger mb-2">-{{ $p->promotion }}%</span>@endif
+            <h6 class="card-title"><a href="/product/{{ $p->id }}" class="text-dark text-decoration-none">{{ $p->name }}</a></h6>
+            <p class="small text-muted mb-1">Size: {{ $p->height }} x {{ $p->width }}</p>
+            @if($p->promotion > 0)
+              <span class="text-muted text-decoration-line-through me-1">${{ $p->price }}</span><strong>${{ $newprice }}</strong>
+            @else
+              <strong>${{ $p->price }}</strong>
             @endif
           </div>
         </div>
-    </center>
-
-
-    <div class="" style="border-radius:10px;padding:0 350px;margin:6px;float:center; display: flex;align-items: center;overflow-x: auto; scroll-behavior: auto;;" >
-        @foreach($userproducts as $pro)
-          @php
-            $prod=DB::table('product')
-              ->select('product.id','product.name','product.photo','product.description','product.price','product.width','product.height')
-              ->where('id','=',$pro->id)
-              ->get();
-          @endphp
-          @foreach($prod as $p)
-            <div class='box' style="flex:1;">
-                <div class='front' style='border-radius:50px'>
-                  @if($p->photo !=null && file_exists(public_path()."/img/$p->photo"))
-                    <img src="{{asset('img/'.$p->photo)}}" style='width:300px;height:240px;border-radius:20px' alt='' id="">
-                  @else
-                    <h2 style="font-size:20px">No Preview Photo</h2>
-                  @endif
-
-                </div>
-                <div class='back'>
-                  <a href="/product/{{$p->id}}" style='font-size:30px;color:#8e221a;padding:0 0 0 0;font-style:italic' id='iname'><b>{{$p->name}}</b></a>
-                  <br>
-                  <p><b>Size:</b> {{$p->height}} x {{$p->width}}<br></p>
-                  <p><strong>{{$p->price}}$</strong></p>
-                </div>
-              </div>
-            @endforeach
-          @endforeach
-        </div>
-          @if($nbPro>'5')
-            <div class="" style="float:right">
-              <div class="">
-                <button type="button" id="moreProducts" style='margin-left:5px;padding:10px;border:0;background-color:transparent;color:blue'>View More</button>
-              </div>
-            </div>
-          @endif
-
-
-
-  <section class="ftco-section" style="padding:50px 0 50px 0;">
-    <div class="contact-form" style="width:100%" >
-      <center>
-          <div class="container" style="background-image: url({{ asset('css/back.jpg') }});background-size:cover;width:90%;padding:">
-            <div class="row justify-content-center">
-              <div class="col-md-6 text-center mb-5">
-                <span style='font-size:35px;font-weight:700;letter-spacing:;border-bottom: 2px solid #aac;'>Contact Us</span>
-              </div>
-            </div>
-            <div class="row justify-content-center">
-              <div class="col-lg-10">
-                <div class="wrapper img" style="background-color:rgb(245,245,255);border-radius:5px">
-                  <div class="row">
-                    <div class="col-md-9 col-lg-7">
-                      <div class="contact-wrap w-100 p-md-5 p-4">
-                        <h3 class="mb-4">Get in touch with us</h3>
-                        <div id="form-message-warning" class="mb-4"></div>
-                        <div class="mb-4" id="thanks" style="display:none;border-bottom:1px solid #aad">
-                          <p><strong>Your message was sent, thank you!</strong></p>
-                        </div>
-                        <form action="" method="post">
-                          @csrf
-                          <div class="row">
-                            <input type="email" name="to" id="to" placeholder="Recipient's Email" value="{{$user->email}}" style="display:none">
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <label class="label" for="name">Full Name</label>
-                                <input type="text" class="form-control" name="name" id="emailname" placeholder="Name">
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <label class="label" for="email">Email Address</label>
-                                <input type="email" class="form-control" name="email" id="email" placeholder="Email">
-                              </div>
-                            </div>
-                            <div class="col-md-12">
-                              <div class="form-group">
-                                <label class="label" for="subject">Subject</label>
-                                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject">
-                              </div>
-                            </div>
-                            <div class="col-md-12">
-                              <div class="form-group">
-                                <label class="label" for="#">Message</label>
-                                <textarea name="message" class="form-control" id="message" cols="30" rows="4" placeholder="Message"></textarea>
-                              </div>
-                            </div>
-                            <div class="col-md-12">
-                              <div class="form-group">
-                                <button type="button" value="Send Message" onclick="sendEmail({{$user->id}})" class="btn btn-secondary">Send Message</button>
-                                <div class="submitting"></div>
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
       </div>
-    </section>
-
-      <div>
-        <div class="form-header text-center">
-      </div>
-      <center>
-
+    @empty
+      <div class="col-12 text-muted">No products yet.</div>
+    @endforelse
   </div>
-  <br>
 
-  </center>
+  <h2 class="h5 mb-3">Contact {{ $user->name }}</h2>
+  <div class="cw-panel">
+    <div id="thanks" class="alert alert-success">Your message was sent, thank you!</div>
+    <form action="" method="post">
+      @csrf
+      <input type="email" name="to" id="to" value="{{ $user->email }}" style="display:none">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="emailname">Full name</label>
+          <input type="text" class="form-control" name="name" id="emailname">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="email">Email address</label>
+          <input type="email" class="form-control" name="email" id="email">
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="subject">Subject</label>
+          <input type="text" class="form-control" name="subject" id="subject">
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="message">Message</label>
+          <textarea name="message" class="form-control" id="message" rows="4"></textarea>
+        </div>
+        <div class="col-12">
+          <button type="button" onclick="sendEmail({{ $user->id }})" class="btn btn-dark">Send message</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
 
+<footer class="py-4 text-center">
+  &copy; {{ date('Y') }} CallyWorld · Developed by Bilal Kaderi
+</footer>
 
-
-
+@include('layouts.theme', ['area' => 'shop'])
 </body>
-
-
-
-<footer class="sticky-footer bg-white" style="border-top: 1px solid #aaa;text-align: center;padding: 25px;background-color:#fff;font-weight:700">
-       <div class="container my-auto">
-         <div class="copyright text-center my-auto">
-           <span> &copy; <script> document.write(new Date().getFullYear()); </script> - Developed by Bilal Kaderi</span>
-         </div>
-       </div>
-     </footer>
+</html>

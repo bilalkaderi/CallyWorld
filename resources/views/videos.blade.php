@@ -1,181 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Watch · CallyWorld</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    .video-thumb { aspect-ratio: 16 / 10; object-fit: cover; background: #111; }
+  </style>
+</head>
+<body>
 
-    <head>
+<nav class="navbar bg-white border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+      <img src="{{ asset('css/icons/pen.png') }}" width="32" height="32" alt="">
+      <span class="fw-semibold">CallyWorld</span>
+    </a>
+    <a class="nav-link px-2" href="{{ route('home') }}">Shop</a>
+  </div>
+</nav>
 
-      <style media="screen">
-        /***** Modal *****/
+<main class="container py-4 py-lg-5">
+  <div class="mb-4">
+    <h1 class="h3 mb-1">Watch</h1>
+    <p class="text-muted mb-0">Short clips from our calligraphers at work.</p>
+  </div>
 
-          .modal-backdrop.in {
-            filter: alpha(opacity=7);
-            opacity: 0.7;
-          }
-
-          .modal-content {
-            background: none;
-            border: 0;
-            -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
-            -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none;
-          }
-
-          .modal-body {
-            padding: 0 25px 25px 25px;
-          }
-
-          .modal-header {
-            padding: 25px 25px 15px 25px;
-            text-align: right;
-          }
-
-          .modal-header, .modal-footer {
-            border: 0;
-          }
-
-          .modal-header .close {
-            float: none;
-            margin: 0;
-            font-size: 36px;
-            color: #fff;
-            font-weight: 300;
-            text-shadow: none;
-            opacity: 1;
-          }
-          .video-link {
-              padding-top: 70px;
-          }
-
-          .video-link a:hover,
-          .video-link a:focus {
-              outline: 0;
-          }
-
-          a .video-link-text {
-              color: #fff;
-              opacity: 0.8;
-              -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
-          }
-
-          a:hover .video-link-text,
-          a:focus .video-link-text {
-              outline: 0;
-              color: #fff;
-              opacity: 1;
-              border-bottom: 1px dotted #fff;
-          }
-
-          a .video-link-icon {
-              position: relative;
-              display: inline-block;
-              width: 50px;
-              height: 50px;
-              margin-right: 10px;
-              background: #e89a3e;
-              color: #fff;
-              line-height: 50px;
-              -moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;
-              -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
-          }
-          a .video-link-icon:after {
-              position: absolute;
-              content: "";
-              top: -6px;
-              left: -6px;
-              width: 66px;
-              height: 66px;
-              background: #444;
-              background: rgba(0, 0, 0, 0.1);
-              z-index: -99;
-              -moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;
-          }
-
-          a:hover .video-link-icon,
-          a:focus .video-link-icon {
-              outline: 0;
-              background: #fff;
-              color: #e89a3e;
-          }
-      </style>
-
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Watch!</title>
-
-        <!-- CSS -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic,500,500italic">
-        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-        <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="assets/css/style.css">
-
-        <!-- Favicon and touch icons -->
-        <link rel="shortcut icon" href="assets/ico/favicon.png">
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-
-    </head>
-
-    <script type="text/javascript">
-      $(document).ready(function(){
-        $('.launch-modal').on('click', function(e){
-            e.preventDefault();
-            $( '#' + $(this).data('modal-id') ).modal();
-            var src = $(this).id();
-            $("#videoPlayer").attr('src',src+'.gif');
-          });
-      });
-    </script>
-
-    <body>
-
-        <!-- Top content -->
-        <div class="top-content">
-            <div class="container">
-
-                <div class="row">
-
-                </div>
-                @foreach ($videos as $v)
-                  <div class="row">
-                      <div class="col-sm-8 col-sm-offset-2 video-link medium-paragraph">
-                          <a href="#" class="launch-modal" id="videos/{{$v->id}}" data-modal-id="modal-video">
-                              <span class="video-link-icon"><i class="fa fa-play"></i></span>
-                              <span class="video-link-text">Play</span>
-                          </a>
-                      </div>
-                  </div>
-                @endforeach
+  @if(count($videos))
+    <div class="row g-4">
+      @foreach($videos as $v)
+        <div class="col-sm-6 col-lg-4">
+          <div class="card h-100 overflow-hidden">
+            <img src="{{ asset('videos/'.$v->id.'.gif') }}" alt="{{ $v->caption }}" class="video-thumb w-100" loading="lazy">
+            <div class="card-body">
+              @if($v->caption)<p class="mb-1">{{ $v->caption }}</p>@endif
+              <a href="{{ route('userprofile', $v->userId) }}" class="small text-decoration-none">{{ $v->username }}</a>
             </div>
+          </div>
         </div>
+      @endforeach
+    </div>
+  @else
+    <div class="cw-panel text-center py-5">
+      <i class="bi bi-camera-video fs-1 text-muted"></i>
+      <p class="mt-2 mb-0 text-muted">No videos yet. Suppliers can share clips from their dashboard.</p>
+    </div>
+  @endif
+</main>
 
-        <!-- MODAL -->
-        <div class="modal fade" id="modal-video" tabindex="-1" role="dialog" aria-labelledby="modal-video-label">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="modal-video">
-                            <div class="embed-responsive embed-responsive-16by9">
-                                <iframe class="embed-responsive-item" id="videoPlayer" src=''
-                                    webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<footer class="py-4 text-center">
+  &copy; {{ date('Y') }} CallyWorld · Developed by Bilal Kaderi
+</footer>
 
-        <!-- JavaScript -->
-        <script src="assets/js/jquery-1.11.1.min.js"></script>
-        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/js/jquery.backstretch.min.js"></script>
-        <script src="assets/js/scripts.js"></script>
-
-    </body>
-
+@include('layouts.theme', ['area' => 'shop'])
+</body>
 </html>

@@ -1,69 +1,61 @@
-  <head>
-    <meta charset="utf-8">
-    <title>Register</title>
-	</head>
-  <style media="screen">
-      th, td {
-        padding: 5px;
-      }
-  </style>
-  <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{-- Supplier sign-up form. Shown inside auth/login.blade.php. --}}
+<div class="card p-4">
+  <h1 class="h4 mb-1">Create a supplier account</h1>
+  <p class="text-muted mb-4">Sell your calligraphy to buyers all over Lebanon.</p>
 
-  <script>
-      var loadFile = function(event) {
-        var image = document.getElementById('profilephoto');
-        image.src = "";
-        image.src = URL.createObjectURL(event.target.files[0]);
-      };
-  </script>
-  <style media="screen">
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap');
-  *{
-    font-family: 'Poppins', sans-serif;
-  }
-  </style>
-  <body>
-  <form class="" action="{{ route('register.custom') }}" method="POST" enctype="multipart/form-data"><center>
+  <form action="{{ route('register.custom') }}" method="POST" enctype="multipart/form-data">
     @csrf
-		<div class="register" align="center" style="">
-      <table style="" align="center" style="width:90%;border-spacing:20px">
-        <tr>
-              <td rowspan="8" style="padding:35px;border-radius: 5px;background-color:#eef">
-                <label for='photoprofile'><img src='img/profile.png' class='photo' name='photo' style="cursor:pointer;width:185px;height:190px;border-radius:4px" title='Choose photo' id='profilephoto'/></label><br>
-                <input type='file' name='photoprofile' style='display:none' accept='' id='photoprofile' onchange='loadFile(event)' >
-            </td>
-      </tr>
-				<tr>
-          <td>
-          <input type="text" name="name"class="form-control" placeholder="Name" id="name" value="{{ old('name') }}">
-        </td></tr>
-
-				<tr><td>
-          <input type="text" name="email" placeholder="Email"class="form-control" id="email" value="{{ old('email') }}" >
-        </td></tr>
-        <tr><td>
-          <input type="password" name="password" placeholder="Password" id="password"class="form-control">
-        </td></tr>
-        <tr><td>
-          <input type="password" name="password_confirmation" placeholder="Confirm Password"class="form-control" id="password_confirmation" >
-        </td></tr>
-        <tr><td>
-          <input type="text" name="address" placeholder="Address" class="form-control" id="address" >
-        </td></tr>
-        <tr><td>
-          @include('layouts.phonecodes')
-          <input name="phone" type="text" id="phone" placeholder="Phone Number" class="form-control"/>
-
-        </td></tr>
-
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <label for="photoprofile" class="mb-0" style="cursor:pointer" title="Choose photo">
+        <img src="{{ asset('img/profile.png') }}" id="profilephoto" alt="" class="rounded-circle border object-fit-cover" width="72" height="72">
+      </label>
+      <div>
+        <label for="photoprofile" class="btn btn-light btn-sm mb-0">Upload photo</label>
+        <div class="text-muted small mt-1">Optional, shown on your profile</div>
       </div>
-    </table>
-    <hr width="70%">
-        <center><input type="submit" id="reg" value="Register" name="btnadd" class="btn">
-          <br><button type="button" id="btnhide" style="border:0;" class="btn">Already registered?</button>
-        </center>
+      <input type="file" name="photoprofile" id="photoprofile" accept="image/*" class="d-none" onchange="loadFile(event)">
+    </div>
 
-		  </div></center>
-    </form>
-	</body>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}">
+    </div>
+    <div class="mb-3">
+      <label for="reg-email" class="form-label">Email</label>
+      <input type="text" name="email" id="reg-email" class="form-control" value="{{ old('email') }}">
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <label for="reg-password" class="form-label">Password</label>
+        <input type="password" name="password" id="reg-password" class="form-control" autocomplete="new-password">
+      </div>
+      <div class="col-sm-6">
+        <label for="password_confirmation" class="form-label">Confirm password</label>
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" autocomplete="new-password">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input type="text" name="address" id="address" class="form-control" value="{{ old('address') }}">
+    </div>
+    <div class="mb-4">
+      <label for="phone" class="form-label">Phone number</label>
+      <div class="input-group">
+        @include('layouts.phonecodes')
+        <input type="text" name="phone" id="phone" class="form-control">
+      </div>
+    </div>
+
+    <button type="submit" id="reg" name="btnadd" class="btn btn-dark w-100">Create account</button>
+  </form>
+
+  <p class="text-center text-muted small mt-4 mb-0">
+    Already registered? <button type="button" id="btnhide" class="btn btn-link btn-sm p-0 align-baseline">Sign in</button>
+  </p>
+</div>
+
+<script>
+  var loadFile = function (event) {
+    document.getElementById('profilephoto').src = URL.createObjectURL(event.target.files[0]);
+  };
+</script>

@@ -2,597 +2,266 @@
   $clientemail=session()->get('clientemail');
   $clientId = DB::table('client')->where('email', $clientemail)->get()->all();
 @endphp
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <meta name="_token" content="{{csrf_token()}}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-           $("#placeorder").click(function(e){
-             e.preventDefault();
-             $.ajaxSetup({
-                 headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-               });
-
-               //form_data.append("name", "name");
-               var productId= $("#productid").val();
-               var quantity=$("#quantity").val();
-               var price=$("#prodPrice").val();
-
-               $.ajax({
-                   url:"{{route('ToCart')}}",
-                   method:'POST',
-                   data:{productId:productId, quantity:quantity, price:price},
-
-                   success: function(output){
-                     if(output.success=='Sign in first!'){
-                       $("#alert_fail").text('');
-                       $("#alert_fail").prepend(output.success);
-                       $("#alert_fail").fadeIn();
-                     }
-                     else{
-                       $("#placeorder").fadeOut();
-                       $("#quantity").text('');
-                       $("#alert_main").text('');
-                       $("#alert_main").prepend(output.success);
-                       $("#alert_main").fadeIn();
-                     }
-
-                       //$(".alert").show();
-                       //$(".alert").html(output.success);
-                       //$("#productstable").append(output.row);
-                  }
-               });
-           });
-           $("#comment").keyup(function(){
-             var r = $(this).val().length;
-                if(r == 0)
-                    $("#sendComment").fadeOut();
-                else
-                    $("#sendComment").fadeIn("2000");
-           });
-
-           $(".ratingrb").click(function(){
-               $.ajaxSetup({
-                   headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-                 });
-
-                 var productid = $("#productId").val();
-                 var clientid=$("#clientId").val();
-                 var rating = $(this).val();
-
-               $.ajax({
-                   url:"{{ route('rateProduct') }}",
-                   method:'POST',
-                   data:{productid:productid, clientid:clientid, rating:rating},
-                   success: function(output){
-                     $("#ratingvalue").text(output.ratings);
-                       $("#ratingvalue").fadeIn();
-
-                       if(output.success=='Sign in first!'){
-                         $("#alert_fail").text('');
-                         $("#alert_fail").prepend(output.success);
-                         $("#alert_fail").fadeIn();
-                       }
-                       else{
-                         $("#alert_main").text('');
-                         $("#alert_main").prepend(output.success);
-                         $("#alert_main").fadeIn();
-                       }
-                       //$(".alert").html(output.success);
-                  }
-               });
-           });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="_token" content="{{csrf_token()}}">
+  <title>{{ $product[0]->name ?? 'Product' }} · CallyWorld</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("#placeorder").click(function(e){
+        e.preventDefault();
+        $.ajaxSetup({
+          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
         });
+        var productId= $("#productid").val();
+        var quantity=$("#quantity").val();
+        var price=$("#prodPrice").val();
 
-        function addComment(id){
-          $.ajaxSetup({
-              headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-          });
-          var id = id;
-          var cId=$("#clientid").val();
-          var comment = $("#comment").val();
-            $.ajax({
-                url:"{{ route('addcomment') }}",
-                method:'get',
-                data:{id:id, cId:cId, comment:comment},
-                success: function(output){
-                  if(output.success=='Sign in first!'){
-                    $("#alert_fail").text('');
-                    $("#alert_fail").prepend(output.success);
-                    $("#alert_fail").fadeIn();
-                  }
-                  else{
-                    $("#alert").fadeIn();
-                    $("#alert_main").text('');
-                    $("#alert_main").prepend(output.success);
-                    $("#alert_main").fadeIn();
-                  }
-                  }
-         });
-       }
+        $.ajax({
+          url:"{{route('ToCart')}}",
+          method:'POST',
+          data:{productId:productId, quantity:quantity, price:price},
+          success: function(output){
+            if(output.success=='Sign in first!'){
+              $("#alert_fail").text(output.success).fadeIn();
+            }
+            else{
+              $("#placeorder").fadeOut();
+              $("#alert_main").text(output.success).fadeIn();
+            }
+          }
+        });
+      });
 
-       function deleteComment(id){
-         $.ajaxSetup({
-             headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
-         });
-           $.ajax({
-               url:"{{route('deletecomment')}}",
-               method:'POST',
-               data: {id:id},
-               success: function(output){
-                   $("#comment_"+id).fadeOut();
-                 }
-       });
-       }
+      $("#comment").keyup(function(){
+        if($(this).val().length == 0)
+          $("#sendComment").fadeOut();
+        else
+          $("#sendComment").fadeIn();
+      });
 
-     </script>
-     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+      $(".ratingrb").click(function(){
+        $.ajaxSetup({
+          headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+        });
+        var productid = $("#productId").val();
+        var clientid=$("#clientId").val();
+        var rating = $(this).val();
 
-  <style media="screen">
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap');
+        $.ajax({
+          url:"{{ route('rateProduct') }}",
+          method:'POST',
+          data:{productid:productid, clientid:clientid, rating:rating},
+          success: function(output){
+            $("#ratingvalue").text(output.ratings).fadeIn();
+            if(output.success=='Sign in first!'){
+              $("#alert_fail").text(output.success).fadeIn();
+            }
+            else{
+              $("#alert_main").text(output.success).fadeIn();
+            }
+          }
+        });
+      });
+    });
 
-    @keyframes fadeInOutAnimation {
-      0% {
-        opacity: 0;
-      }
-
-      100% {
-        opacity: 1;
-      }
+    function addComment(id){
+      $.ajaxSetup({
+        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+      });
+      var cId=$("#clientid").val();
+      var comment = $("#comment").val();
+      $.ajax({
+        url:"{{ route('addcomment') }}",
+        method:'get',
+        data:{id:id, cId:cId, comment:comment},
+        success: function(output){
+          if(output.success=='Sign in first!'){
+            $("#alert_fail").text(output.success).fadeIn();
+          }
+          else{
+            $("#alert_main").text(output.success).fadeIn();
+          }
+        }
+      });
     }
-    *{
-      font-family: 'Poppins', sans-serif;
+
+    function deleteComment(id){
+      $.ajaxSetup({
+        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+      });
+      $.ajax({
+        url:"{{route('deletecomment')}}",
+        method:'POST',
+        data: {id:id},
+        success: function(output){
+          $("#comment_"+id).fadeOut();
+        }
+      });
     }
-    h2{
-      font-weight: 800;
-      text-transform:uppercase;
-      color: black;
-      letter-spacing: 2px;
-      margin-top: -40px;
-      font-size: 40px;
-      animation: fadeInOutAnimation 1s infinite alternate;
-    }
+  </script>
+  <style>
+    .product-photo { aspect-ratio: 4 / 3; object-fit: cover; }
+    .price-old { text-decoration: line-through; color: var(--cw-muted); }
+    /* Star rating: inputs are listed 5..1 and shown right-to-left so hover fills to the left */
+    .rating { display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+    .rating input { display: none; }
+    .rating label { font-size: 1.6rem; line-height: 1; color: #d1d5db; cursor: pointer; }
+    .rating label:hover, .rating label:hover ~ label,
+    .rating input:checked ~ label { color: #f59e0b; }
+    #alert_main, #alert_fail, #ratingvalue, #sendComment { display: none; }
+  </style>
+</head>
+<body>
 
-      body{
-        align-items: center;
-        background-color: white;
-        width:97%;
-      }
-      .productinfo{
-        padding: 10px;
-        margin-left: 4rem;
-        margin-top: 1rem;
-        font-size: 25px;
-      }
+<nav class="navbar bg-white border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+      <img src="{{ asset('css/icons/pen.png') }}" width="32" height="32" alt="">
+      <span class="fw-semibold">CallyWorld</span>
+    </a>
+    <div class="d-flex gap-1">
+      <a class="nav-link px-2" href="{{ route('home') }}">Shop</a>
+      @if(session()->has('clientemail'))
+        <a class="nav-link px-2" href="{{ route('cart') }}">Cart</a>
+      @endif
+    </div>
+  </div>
+</nav>
 
-      .table{
-        letter-spacing: -0.5px;
-        width:500px;
-        margin-top: 100px;
-      }
-      .table td{
-        font-size: 19px;
-        font-weight: 600;
-      }
+@foreach($product as $product)
+<main class="container py-4 py-lg-5">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ route('home') }}">Shop</a></li>
+      @if($product->type)<li class="breadcrumb-item">{{ $product->type }}</li>@endif
+      <li class="breadcrumb-item active" aria-current="page">{{ $product->name }}</li>
+    </ol>
+  </nav>
 
-      .productphoto{
-        margin-right:;
-        margin-top: ;
-        transition-delay: 0.3s;
-      }
+  <div id="alert_main" class="alert alert-success"></div>
+  <div id="alert_fail" class="alert alert-danger"></div>
 
-      .btnordernow{
-        background-color: #8e221a;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 5px;
-        color:white;
-        border:0;
-        width:9rem;
-        transition: all 0.3s ease-in;
-      }
-      .btnordernow:hover{
-        background-color: white;
-        color:#8e221a;
-        transition: 0.3s;
-        letter-spacing: 4px;
-
-        cursor: pointer;
-      }
-
-      .back{
-        text-decoration: none;
-        font-size: 18px;
-        color:white;
-        margin-left: 5px;
-        background-color:rgba(10,20,150,0.4);
-        border-radius:5px;
-
-        margin-top: ;
-        text-align: center;
-        transition: all 0.2s ease-in;
-        padding:6px 15px;
-      }
-      .back:hover{
-        background-color: rgba(142,34,26,0.8);
-        color:white;
-        transition: 0.2s;
-      }
-
-
-      .quantity:hover,
-      .quantity:required{
-        border-color: rgb(140,10,10);
-        border-style: groove;
-        transition: all 0.3s ease-out;
-      }
-      .commentdiv{
-        margin: 30px;
-      }
-
-      .comment{
-        text-transform: uppercase;
-        text-align: center;
-        border-radius: 5px;
-        border-color: white;
-        margin: 5px;
-        padding: 10px;
-        border-bottom: solid #8e221a;
-        transition: 0.2s all;
-      }
-      .comment:focus,
-      .comment:hover{
-        background-color: #eee;
-      }
-
-      .alert-success {
-        color: #0f6848;
-        background-color: #66bb6a;
-      }
-      .alert-danger {
-        color: blue;
-        background-color: rgba(160,10,20,0.8);
-      }
-
-      .alert-success hr {
-        border-top-color: #aaebd3;
-      }
-      .alert {
-        position: static;
-        padding: 0.75rem 1.25rem;
-        margin-bottom: 1rem;
-        border: none;
-        display: none;
-        align-self: center;
-        align-items: center;
-        border-radius: 0.35rem;
-        color: #fafafa !important;
-        width: 20%;
-      }
-      /*rating*/
-
-
-      .rating {
-      display: flex;
-      margin-bottom: -20px;
-      flex-direction: row-reverse;
-      justify-content: center;
-      }
-
-
-      .rating > input{ display:none;}
-
-      .rating > label {
-      position: relative;
-      width: 1em;
-      font-size: 1.5vw;
-      color: yellow;
-      cursor: pointer;
-      }
-
-      .rating > label::before{
-      content: "\2605";
-      position: absolute;
-      opacity: 0;
-      }
-
-      .rating > label:hover:before,
-      .rating > label:hover ~ label:before {
-      opacity: 1 !important;
-      }
-
-      .rating > input:checked ~ label:before{
-      opacity:1;
-      }
-
-      .rating:hover > input:checked ~ label:before{ opacity: 0.4; }
-
-      .ratingDiv > h4{
-        font-style: italic;
-        font-size: 20px;
-        text-transform: uppercase;
-        text-shadow: 5px;
-      }
-
-
-
-
-      .caption-image{
-        top:100px;
-        right:200px;
-        border-radius: 5px;
-        z-index: 20;
-        color:white;
-        background-color: blue;
-      }
-
-          .ribbon {
-        width: 150px;
-        height: 150px;
-        overflow: hidden;
-        position: relative;
-        }
-        .ribbon::before,
-        .ribbon::after {
-        position: absolute;
-        z-index: -1;
-        content: '';
-        display: block;
-        border: 5px solid #2980b9;
-        }
-        .ribbon span {
-        position: absolute;
-        display: block;
-        width: 225px;
-        padding: 15px 0;
-        background-color: #3498db;
-        box-shadow: 0 5px 10px rgba(0,0,0,.1);
-        color: #fff;
-        text-shadow: 0 1px 1px rgba(0,0,0,.2);
-        text-transform: uppercase;
-        text-align: center;
-        }
-
-        /* top left*/
-        .ribbon-top-left {
-        top: -10px;
-        left: -10px;
-        }
-        .ribbon-top-left::before,
-        .ribbon-top-left::after {
-        border-top-color: transparent;
-        border-left-color: transparent;
-        }
-        .ribbon-top-left::before {
-        top: 0;
-        right: 0;
-        }
-        .ribbon-top-left::after {
-        bottom: 0;
-        left: 0;
-        }
-        .ribbon-top-left span {
-        right: -25px;
-        top: 30px;
-        transform: rotate(-45deg);
-        }
-
-        /* top right*/
-        .ribbon-top-right {
-        top: -10px;
-        right: -10px;
-        }
-        .ribbon-top-right::before,
-        .ribbon-top-right::after {
-        border-top-color: transparent;
-        border-right-color: transparent;
-        }
-        .ribbon-top-right::before {
-        top: 0;
-        left: 0;
-        }
-        .ribbon-top-right::after {
-        bottom: 0;
-        right: 0;
-        }
-        .ribbon-top-right span {
-        left: -25px;
-        top: 30px;
-        transform: rotate(45deg);
-        }
-
-        /* bottom left*/
-        .ribbon-bottom-left {
-        bottom: -10px;
-        left: -10px;
-        }
-        .ribbon-bottom-left::before,
-        .ribbon-bottom-left::after {
-        border-bottom-color: transparent;
-        border-left-color: transparent;
-        }
-        .ribbon-bottom-left::before {
-        bottom: 0;
-        right: 0;
-        }
-        .ribbon-bottom-left::after {
-        top: 0;
-        left: 0;
-        }
-        .ribbon-bottom-left span {
-        right: -25px;
-        bottom: 30px;
-        transform: rotate(225deg);
-        }
-
-        /* bottom right*/
-        .ribbon-bottom-right {
-        bottom: -10px;
-        right: -10px;
-        }
-        .ribbon-bottom-right::before,
-        .ribbon-bottom-right::after {
-        border-bottom-color: transparent;
-        border-right-color: transparent;
-        }
-        .ribbon-bottom-right::before {
-        bottom: 0;
-        left: 0;
-        }
-        .ribbon-bottom-right::after {
-        top: 0;
-        right: 0;
-        }
-        .ribbon-bottom-right span {
-        left: -25px;
-        bottom: 30px;
-        transform: rotate(-225deg);
-        }
-
-    </style>
-
-  </head>
-  <body>
-
-    <form class="" action="" method="post">
-      @foreach($product as $product)
-      <h1 align=center style="width:100%;border-bottom:0.5px solid #8e221a;font-size:40px;letter-spacing: -1px;font-weight:700;padding:8px">{{$product->name}}    |Details </h1>
-      @csrf
-      <center><div id="alert_main" class="alert alert-success" ></div>
-      <div id="alert_fail" class="alert alert-danger" ></div></center>
-        <div class="productinfo" style="float:left">
-          <div class="">
-            <div class="">
-              @if($product->promotion>0)
-                <div class="ribbon ribbon-top-left"><span style="font-size:18px">%{{$product->promotion}} Promotion</span></div>
-              @endif
-
-              @if($product->photo != null)
-              <img src="{{asset('img/'.$product->photo)}}" style='border-radius:0 25px 25px 0;height:350px;width:500px;margin-top:'>
-              @else
-                <center><h2 style="font-size:40px;margin-right: 200px" >No Preview Photo</h2></center>
-              @endif
-          </div>
-          <table border='0' class='table' style="border-bottom:0.5px solid black;padding-bottom:17px">
-            <tr>
-            </tr>
-            <tr>
-              <td><h2 style="font-size:30px;font-weight:700">{{$product->name}}</h2></td>
-            </tr>
-            <tr>
-              <td>@if($product->promotion>0)
-              @php
-                $pr=$product->price;
-                $pro=$product->promotion;
-                $newprice=$pr-(($pro/100)*$pr);
-              @endphp
-                Price:  <p style=''><span style="text-decoration: line-through;">${{$product->price}}</span> <span style="width:10px">  </span> <span style="font-weight:600">${{$newprice}}</span><input type="number" id="prodPrice" value="{{$newprice}}" style="display:none">
-              @else
-                Price:  <p style=''>$ {{$product->price}}<input type="number" id="prodPrice" value="{{$product->price}}" style="display:none">
-              @endif    || </td>
-              <td><b>{{$product->width}} x {{$product->height}}</b> sized, made from {{$product->type}}.</td>
-            </tr>
-          </table>
-        </div>
-
-          <table>
-              <tr>
-                <td style="font-size:20px;letter-spacing:-0.6px">{{$product->description}}</td>
-              </tr>
-              <tr>
-                <td><b>By: </b><a href="/userprofile/{{$product->userId}}" style="color:black;font-weight:800;text-decoration:none">{{$product->username}}</td>
-              </tr>
-              <tr>
-                <td><button type="button" id='userid'  value="{{$product->userId}}" style='display:none'> {{$product->userId}}</button></td>
-              </tr>
-              </table>
-
-            <input type="number" class="quantity" id="quantity" name="quantity" placeholder="Qunatity" min="1" max="{{$product->stock}}" style="margin-top: 20px;width:100px;font-size:15px;padding: 10px;font-weight:600;border-radius:10px;border:0;background-color:rgba(10,10,130,0.1)"/><br>
-              <button type="button" class="btnordernow"  name="placeorder" id="placeorder">Add To Cart</button>
-              <a class="back" href="{{route('home')}}">Back</a>
-
-          </div>
-
-
-        <div class="" style="border-bottom:3px solid #8e221a;display:inline-grid;float:right;margin-right:100px">
-
-          <div class="commentdiv" style="">
-              <div id="alert" style="border:0.11rem solid white;border-radius:5px;background-color:white;padding:5px;padding:30px">
-                <table align='right' style="font-size:22px;" id="tablecomments">
-                @php
-                  $comments=DB::select("select * from comment where productId = ? order by id desc", [$product->id]);
-                @endphp
-                @foreach($comments as $comments)
-                  @php
-                    $clients=DB::select("select * from client where id = ?", [$comments->clientId]);
-                  @endphp
-                  <tr id="comment_{{$comments->id}}"><th style="padding:5px 40px">@foreach($clients as $clients){{$clients->name}}@endforeach</th>
-                      <td style="padding:5px 40px">{{$comments->comment}}</td>
-                      @foreach($clientId as $c)
-                        @if($comments->clientId==$c->id)<td style="border-left:1px solid #aaa"><img src="{{asset('css/icons/bin.png')}}" onclick="deleteComment({{$comments->id}})" style="width:22px;height:26px;cursor:pointer;"></td>@endif
-                      @endforeach
-                  </tr>
-                @endforeach
-              </table>
-              <table>
-                <tr>
-                  <th>Add a Comment ...</th>
-                </tr>
-              <tr>
-                <td>
-                  <input type="text" style="width:250px" id="comment" name="comment" class="comment" placeholder="Add Comment"/><button type="button" onclick="addComment({{$product->id}})" value="" style="border-radius: 0;cursor:pointer;z-index:10;border-top: 1px;margin-left:-40.5px;background-color:white;font-size:14px;font-weight:900;display:none" class="comment" id="sendComment">⤊</button></input>
-                </td>
-              </tr>
-              </table>
-            </div>
-        </div>
-    <div class="" style="float:right">
-      <table id="productrate">
-        <tr>
-          <th>Rate {{$product->name}}</th>
-        </tr>
-        <tr>
-          <form class="" action="" method="post">
-
-          @csrf
-              <div class="rating">
-                  <input type="radio" class="ratingrb" name="rating" value="5" id="5"><label for="5">☆</label>
-                  <input type="radio" name="rating" class="ratingrb" value="4" id="4"><label for="4">☆</label>
-                  <input type="radio" name="rating" class="ratingrb" value="3" id="3"><label for="3">☆</label>
-                  <input type="radio" name="rating" class="ratingrb" value="2" id="2"><label for="2">☆</label>
-                  <input type="radio" name="rating" class="ratingrb" value="1" id="1"><label for="1">☆</label>
-                </div>
-        </tr>
-        <tr>
-          <td id="ratingvalue" style="display:none"></td>
-        </tr>
-        <tr>
-          <div class="" style="display:none">
-            @foreach($clientId as $c)
-              <button disabled value="{{$c->id}}" id="clientId"></button>
-              <button disabled value="{{$product->id}}" id="productId"></button>
-            @endforeach
-          </div>
-        </tr>
-      </form>
-
-      </table>
-
+  <div class="row g-4 g-lg-5">
+    <div class="col-lg-7">
+      <div class="position-relative">
+        @if($product->photo != null)
+          <img src="{{ asset('img/'.$product->photo) }}" alt="{{ $product->name }}" class="product-photo w-100 rounded-4 border">
+        @else
+          <div class="product-photo w-100 rounded-4 border bg-light d-flex align-items-center justify-content-center text-muted">No preview photo</div>
+        @endif
+        @if($product->promotion > 0)
+          <span class="badge bg-danger position-absolute top-0 start-0 m-3 fs-6">-{{ $product->promotion }}%</span>
+        @endif
+      </div>
     </div>
 
+    <div class="col-lg-5">
+      <div class="cw-panel">
+        <h1 class="h3 mb-1">{{ $product->name }}</h1>
+        <p class="text-muted mb-3">by <a href="/userprofile/{{ $product->userId }}" class="fw-medium text-decoration-none">{{ $product->username }}</a></p>
+        <button type="button" id="userid" value="{{ $product->userId }}" style="display:none">{{ $product->userId }}</button>
+
+        <div class="d-flex align-items-baseline gap-2 mb-3">
+          @if($product->promotion > 0)
+            @php $newprice = $product->price - (($product->promotion / 100) * $product->price); @endphp
+            <span class="fs-3 fw-semibold">${{ $newprice }}</span>
+            <span class="price-old">${{ $product->price }}</span>
+            <input type="number" id="prodPrice" value="{{ $newprice }}" style="display:none">
+          @else
+            <span class="fs-3 fw-semibold">${{ $product->price }}</span>
+            <input type="number" id="prodPrice" value="{{ $product->price }}" style="display:none">
+          @endif
+        </div>
+
+        <dl class="row small mb-3">
+          <dt class="col-4 text-muted fw-normal">Size</dt>
+          <dd class="col-8 mb-1">{{ $product->width }} × {{ $product->height }}</dd>
+          @if($product->type)
+            <dt class="col-4 text-muted fw-normal">Category</dt>
+            <dd class="col-8 mb-1">{{ $product->type }}</dd>
+          @endif
+          <dt class="col-4 text-muted fw-normal">In stock</dt>
+          <dd class="col-8 mb-1">{{ $product->stock }}</dd>
+        </dl>
+
+        @if($product->description)
+          <p class="mb-4">{{ $product->description }}</p>
+        @endif
+
+        <div class="d-flex gap-2 mb-4">
+          <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Qty" min="1" max="{{ $product->stock }}" value="1" style="max-width:90px">
+          <button type="button" class="btn btn-dark flex-grow-1" name="placeorder" id="placeorder">Add to cart</button>
+        </div>
+
+        <div class="border-top pt-3">
+          <div class="small text-muted mb-1">Rate this piece</div>
+          <div class="rating">
+            @for($i = 5; $i >= 1; $i--)
+              <input type="radio" class="ratingrb" name="rating" value="{{ $i }}" id="{{ $i }}"><label for="{{ $i }}" title="{{ $i }} stars">★</label>
+            @endfor
+          </div>
+          <div id="ratingvalue" class="small text-muted mt-1"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
+  <section class="mt-5">
+    <h2 class="h5 mb-3">Comments</h2>
+    <div class="cw-panel">
+      @php
+        $comments=DB::select("select * from comment where productId = ? order by id desc", [$product->id]);
+      @endphp
+      <ul class="list-unstyled mb-0" id="tablecomments">
+        @forelse($comments as $comments)
+          @php
+            $clients=DB::select("select * from client where id = ?", [$comments->clientId]);
+          @endphp
+          <li class="d-flex justify-content-between align-items-start py-2 border-bottom" id="comment_{{ $comments->id }}">
+            <div>
+              <div class="fw-medium">@foreach($clients as $clients){{ $clients->name }}@endforeach</div>
+              <div>{{ $comments->comment }}</div>
+            </div>
+            @foreach($clientId as $c)
+              @if($comments->clientId == $c->id)
+                <button type="button" class="btn btn-sm btn-light" onclick="deleteComment({{ $comments->id }})" title="Delete comment"><i class="bi bi-trash"></i></button>
+              @endif
+            @endforeach
+          </li>
+        @empty
+          <li class="text-muted py-2">No comments yet.</li>
+        @endforelse
+      </ul>
 
-    <div class="" style="display:none">
-      @foreach($clientId as $c)
-        <button disabled value="{{$c->id}}" id="clientid"></button>
-        <button disabled value="{{$product->id}}" id="productid"></button>
-      @endforeach
+      <div class="input-group mt-3">
+        <input type="text" id="comment" name="comment" class="form-control comment" placeholder="Add a comment">
+        <button type="button" onclick="addComment({{ $product->id }})" class="btn btn-dark comment" id="sendComment">Post</button>
+      </div>
     </div>
-  </form>
-  @endforeach
-  </body>
+  </section>
 
+  <div style="display:none">
+    @foreach($clientId as $c)
+      <button disabled value="{{ $c->id }}" id="clientId"></button>
+      <button disabled value="{{ $product->id }}" id="productId"></button>
+      <button disabled value="{{ $c->id }}" id="clientid"></button>
+      <button disabled value="{{ $product->id }}" id="productid"></button>
+    @endforeach
+  </div>
+</main>
+@endforeach
+
+<footer class="py-4 text-center">
+  &copy; {{ date('Y') }} CallyWorld · Developed by Bilal Kaderi
+</footer>
+
+@include('layouts.theme', ['area' => 'shop'])
+</body>
 </html>
