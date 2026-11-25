@@ -294,7 +294,7 @@ function alert(id){
                 @foreach($data as $data)
                   @php
                     $id=$data['id'];
-                    $prod=DB::select("select * from product where id=$id");
+                    $prod=DB::select("select * from product where id = ?", [$id]);
                   @endphp
 
                     @foreach($prod as $p)
@@ -405,7 +405,7 @@ function alert(id){
                                 @foreach($dat as $data)
                                   @php
                                     $id=$data['id'];
-                                    $prod=DB::select("select * from product where id=$id");
+                                    $prod=DB::select("select * from product where id = ?", [$id]);
                                   @endphp
 
                                     @foreach($prod as $p)

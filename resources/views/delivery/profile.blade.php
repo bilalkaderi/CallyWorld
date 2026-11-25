@@ -941,7 +941,7 @@
                                                    @foreach($data as $data)
                                                      @php
                                                        $id=$data['id'];
-                                                       $prod=DB::select("select * from product where id=$id");
+                                                       $prod=DB::select("select * from product where id = ?", [$id]);
                                                      @endphp
                                                      @foreach($prod as $p)
                                                       <p><a href="product/{{$p->id}}" class="text-dark">{{$p->name}} : {{$data['quantity']}} items</a></p>

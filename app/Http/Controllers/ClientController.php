@@ -399,7 +399,9 @@ class ClientController extends Controller
 
   public function addToCart(Request $request){
     if(session()->has('clientemail')){
-      $id=$request->id;
+      $request->validate(['id' => 'required|integer|exists:product,id']);
+      // Stored as a string: increase/decrease/removeFromCart compare ids with ===.
+      $id=(string)(int)$request->id;
       $price=$request->price;
       $item = ['id' => $id, 'quantity' => 1, 'price' => $price];
       Session::push('items', $item);
@@ -419,8 +421,13 @@ class ClientController extends Controller
 
   public function ToCart(Request $request){
     if(session()->has('clientemail')){
-      $id=$request->productId;
-      $quantity=$request->quantity;
+      $request->validate([
+        'productId' => 'required|integer|exists:product,id',
+        'quantity' => 'required|integer|min:1',
+      ]);
+      // Stored as a string: increase/decrease/removeFromCart compare ids with ===.
+      $id=(string)(int)$request->productId;
+      $quantity=(int)$request->quantity;
       $price=$request->price;
       $item = ['id' => $id, 'quantity' => $quantity, 'price' => $price];
       Session::push('items', $item);

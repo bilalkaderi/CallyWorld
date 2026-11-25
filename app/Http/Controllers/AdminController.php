@@ -497,7 +497,7 @@ public function changePasswordUserAdmin(Request $request)
               $id=$data['id'];
               $quantity=$data['quantity'];
               $price=$data['price'];
-              $p=DB::select("select * from product where id=$id");
+              $p=DB::select("select * from product where id = ?", [$id]);
               foreach($p as $p){
                 $o=DB::table('orders')->where('cartId','=',$c->id)->where('productId','=',$p->id)->first();
 

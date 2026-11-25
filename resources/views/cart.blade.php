@@ -733,7 +733,7 @@ function decrease(id){
                                        @php
                                          $id=$data['id'];
                                          $quantity=$data['quantity'];
-                                         $prod=DB::select("select * from product where id=$id");
+                                         $prod=DB::select("select * from product where id = ?", [$id]);
                                        @endphp
 
                                        @foreach($prod as $p){{$p->name}}: {{$quantity}} items
@@ -775,7 +775,7 @@ function decrease(id){
             @foreach($items as $item)
               @php
                 $id=$item['id'];
-                $prod=DB::select("select * from product where id=$id");
+                $prod=DB::select("select * from product where id = ?", [$id]);
               @endphp
               @foreach($prod as $prod)
             <div class="row" id="item_{{$prod->id}}">
