@@ -202,4 +202,5 @@ function changePasswordClientAdmin(id){
 </div>
 </div>
 
+@include('layouts.theme', ['area' => 'admin'])
 </body>

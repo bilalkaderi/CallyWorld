@@ -963,7 +963,7 @@
      }
 
 </script>
-<section class="" style="background-color:rgb(245,245,255)">
+<section>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
      <div class="container">
          <button class="navbar-toggler" id="toggleNavBar" type="button" data-bs-toggle="collapse" data-bs-target="#mynav"
@@ -1013,7 +1013,7 @@
   <form class="" action="" method="post">
     {{csrf_field()}}
     <center>
-      <div class="" style="padding:40px;background-color:rgba(245,240,250,0.9);border-radius:6px" id="editprofile">
+      <div class="cw-panel" id="editprofile">
         <div class="profchart"  style="padding:70px;width:auto;background-color:white;border-radius:6px">
            <div class="">
              <div class="">
@@ -1079,7 +1079,7 @@
    <center>
      <form class="" action="" method="post">
      {{csrf_field()}}
-     <div class="" style="padding:40px;background-color:rgba(245,240,250,0.9);border-radius:6px" id="addproduct">
+     <div class="cw-panel" id="addproduct">
        <table align="center" class="table" style="width:70%">
          <tr>
            <td colspan="3" style="font-weight:900;font-size:26px;color:#8e221a;">New Product</td>
@@ -1142,7 +1142,7 @@
    <span id="spanU" class="btn-close">&times;</span>
    <form class="" action="" method="post">
      {{csrf_field()}}
-     <center><div class="" style="padding:40px;background-color:rgba(245,240,250,0.9);border-radius:6px" id="updateproduct">
+     <center><div class="cw-panel" id="updateproduct">
        <table align="center" class="table" style="width:70%">
          <tr>
            <td style="color:#8e221a;font-weight:900;font-size:26px;" colspan="3">Update Product</td>
@@ -1193,7 +1193,7 @@
    <span id="span" class="btn-close">&times;</span>
    <center><form class="" action="{{route('addvideo')}}" method="post" enctype="multipart/form-data">
      @csrf
-     <div class="" style="padding:40px;background-color:rgba(245,240,250,0.9);border-radius:6px" id="addvideo">
+     <div class="cw-panel" id="addvideo">
        <table align="center" class="table" style="width:70%">
          <tr>
            <td colspan="3" style="font-weight:900;font-size:26px;color:#8e221a;">Publish a New Video</td>
@@ -1536,3 +1536,4 @@
  <div class="">
    @include('admin.bars.footer')
  </div>
+@include('layouts.theme', ['area' => 'supplier'])

@@ -660,7 +660,7 @@ function decrease(id){
    </div>
 </nav>
     <section class="h-100 gradient-custom">
-        <div class="section" id="orders-section" style="padding:60px 0 60px 0;background-color:rgba(245,245,250,0.99);" >
+        <div class="section" id="orders-section" style="padding:40px 0;" >
         @php
           $id=$client->id;
           $carts=DB::table('cart')->where('clientId','=',$id)->get()->sortbyDesc('id');
@@ -717,10 +717,10 @@ function decrease(id){
                                         <span class="fas fa-gift" style="color:green;font-size:25px"></span>
                                        <div id="tracker"></div>
                                      @elseif($c->status=='On Delivery')
-                                       <span class="fas fa-box" style="color:blue;font-size:25px"></span>
+                                       <span class="fas fa-box" style="color:var(--cw-accent);font-size:22px"></span>
                                        <div id="tracker"></div>
                                        @elseif($c->status=='On Preparing')
-                                        <span class="fas fa-box-open" style="color:red;font-size:25px"></span>
+                                        <span class="fas fa-box-open" style="color:var(--cw-accent);font-size:22px"></span>
                                         <div id="tracker"></div>
                                        @else
                                         <span class="fas fa-check" style="color:#444;font-size:25px"></span>
@@ -750,7 +750,7 @@ function decrease(id){
                                    @php
                                     $delman=DB::table('deliveryman')->where('id','=',$c->delivery_details)->first();
                                    @endphp
-                                   <div class="red-label ms-auto text-uppercase"><strong>Driver: </strong>{{$delman->name}}<p><a style="color:white" href='tel:{{$delman->phone}}'>{{$delman->phone}}</a></p></div>
+                                   <div class="ms-auto small text-end"><span class="text-muted">Driver:</span> {{$delman->name}} · <a href="tel:{{$delman->phone}}">{{$delman->phone}}</a></div>
                                    @endif
                                </div>
                                <div class="alert alert-success" id="alertConfirm_{{$c->id}}" style="display:none;margin-top:15px"></div>
@@ -992,3 +992,4 @@ function decrease(id){
     </div>
   </div>
 </section>
+@include('layouts.theme', ['area' => 'shop'])

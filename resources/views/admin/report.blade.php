@@ -263,4 +263,5 @@ $(document).ready(function(){
   </div>
   </div>
 
+@include('layouts.theme', ['area' => 'admin'])
 </body>

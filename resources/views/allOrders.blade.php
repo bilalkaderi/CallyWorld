@@ -208,3 +208,4 @@ function openModal(){
   </div>
 </div>
 </form>
+@include('layouts.theme', ['area' => 'supplier'])

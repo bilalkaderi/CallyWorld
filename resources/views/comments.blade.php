@@ -113,4 +113,5 @@ function deleteComment(id){
 </div>
 </div>
 
+@include('layouts.theme', ['area' => 'supplier'])
 </body>

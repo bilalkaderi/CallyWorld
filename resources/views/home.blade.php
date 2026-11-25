@@ -507,5 +507,6 @@
     });
   }
 </script>
+@include('layouts.theme', ['area' => 'shop'])
 </body>
 </html>

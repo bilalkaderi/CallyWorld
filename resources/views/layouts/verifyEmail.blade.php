@@ -24,3 +24,4 @@
     </div>
 </div>
 </section>
+@include('layouts.theme', ['area' => 'shop'])

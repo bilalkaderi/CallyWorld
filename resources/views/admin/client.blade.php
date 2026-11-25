@@ -223,4 +223,5 @@ function deleteClient(id){
         </div>
         </div>
 
-        </body>
+        @include('layouts.theme', ['area' => 'admin'])
+</body>

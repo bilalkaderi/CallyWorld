@@ -212,4 +212,5 @@ function deleteCat(id){
 </div>
 </div>
 
+@include('layouts.theme', ['area' => 'admin'])
 </body>

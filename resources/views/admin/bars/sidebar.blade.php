@@ -1,7 +1,10 @@
 <ul class="navbar-nav sidebar sidebar-light accordion " id="accordionSidebar">
-     <a class="sidebar-brand d-flex align-items-center  justify-content-center" style="background-color:rgba(20,140,50,0.5)" href="">
-
-       <div class="sidebar-brand-text mx-3" style="font-family:Calibri">Welcome BILAL</div>
+     <a class="sidebar-brand d-flex align-items-center gap-2" href="{{ route('admin') }}">
+       <img src="{{ asset('css/icons/pen.png') }}" alt="">
+       <div class="sidebar-brand-text text-start">
+         CallyWorld
+         <span class="cw-area-label">Admin · {{ Auth::user()->name }}</span>
+       </div>
      </a>
      <hr class="sidebar-divider my-0">
      <li class="nav-item active">

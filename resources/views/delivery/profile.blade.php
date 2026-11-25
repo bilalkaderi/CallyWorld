@@ -771,7 +771,7 @@
 
 
 </script>
-<section class="" style="background-color:rgb(245,245,255)">
+<section>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
      <div class="container">
          <a class="navbar-brand" href="#">
@@ -995,3 +995,4 @@
        @include('admin.bars.footer')
      </div>
    </div>
+@include('layouts.theme', ['area' => 'courier'])
