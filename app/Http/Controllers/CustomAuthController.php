@@ -15,7 +15,7 @@ class CustomAuthController extends Controller
 
     public function index()
     {
-        if (session()->has('email') && session()->has('password')) {
+        if (Auth::check() && session()->has('email')) {
           $email=Session::get('email');
           $user = DB::table('users')->where('email', $email)->first();
           $userprod = DB::table('product')->where('userId', $user->id)->get();
@@ -34,13 +34,15 @@ class CustomAuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+          // New session id after login, so a session id planted before login is useless.
+          $request->session()->regenerate();
           if(Auth::user()->status=='verified'){
             if(Auth::user()->role=='1'){
               return redirect()->route('admin');
             }
             else{
+              // Only the email is kept; the password is never stored in the session.
               session(['email'=>Auth::user()->email]);
-              session(['password'=>$request->password]);
               Session::save();
               return redirect()->route('user')->withSuccess('Signed in');
             }
@@ -150,7 +152,7 @@ class CustomAuthController extends Controller
 
     public function signOut() {
         session()->pull('email');
-        session()->pull('password');
+        session()->pull('password'); // clears it from sessions created before this fix
         Auth::logout();
 
         return Redirect('login');
