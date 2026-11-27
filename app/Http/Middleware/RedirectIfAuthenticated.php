@@ -23,7 +23,11 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect('/login');
+                // Send signed-in users to their dashboard. Redirecting to /login
+                // here looped, because /login itself uses this middleware.
+                return Auth::guard($guard)->user()->role == '1'
+                    ? redirect()->route('admin')
+                    : redirect()->route('user');
             }
         }
 
