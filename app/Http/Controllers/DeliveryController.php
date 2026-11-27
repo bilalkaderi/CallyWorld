@@ -56,29 +56,19 @@ class DeliveryController extends Controller
   {
           $d = DeliveryMan::where('username', '=', $request->username)->first();
 
-          if($d != null) {
-              if($request->password==$d->password){
-                session(['deliveryman'=>$request->username]);
-                Session::save();
+          // Same message for an unknown username and a wrong password,
+          // so the form can't be used to find out which usernames exist.
+          if(!$d || !Hash::check((string)$request->password, $d->password)){
+              return response()->json([
+                'success' =>'Login details are not valid.'
+              ]);
+          }
 
-                return response()->json([
-                'success' =>'Logged in successfully!',
-                'delivery'=>$d
-                ]);
+          session(['deliveryman'=>$d->username]);
+          Session::save();
 
-              }
-              else{
-                  return response()->json([
-                  'success' =>'Login details are not valid.'
-                  ]);
-                }
-
-        }
-        else{
-            return response()->json([
-                'success' =>'Username does not exist!'
-                ]);
-            }
-
-}
+          return response()->json([
+            'success' =>'Logged in successfully!'
+          ]);
+  }
 }
