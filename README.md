@@ -99,6 +99,7 @@ The seeder can be run again (`php artisan db:seed`) without creating duplicates.
 app/Http/Controllers/   AdminController, UserController (artists), ClientController (buyers),
                         DeliveryController, PaymentController, HomeController, CustomAuthController
 app/Models/             Eloquent models (Product, Cart, Order, Client, User, ...)
+app/Services/           CartCheckout: prices the cart from the database and creates the orders
 database/migrations/    Database schema
 database/seeders/       Demo data
 resources/views/        Blade templates (admin/, auth/, delivery/, storefront pages)
