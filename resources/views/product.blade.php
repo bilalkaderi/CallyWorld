@@ -21,12 +21,11 @@
         });
         var productId= $("#productid").val();
         var quantity=$("#quantity").val();
-        var price=$("#prodPrice").val();
 
         $.ajax({
           url:"{{route('ToCart')}}",
           method:'POST',
-          data:{productId:productId, quantity:quantity, price:price},
+          data:{productId:productId, quantity:quantity},
           success: function(output){
             if(output.success=='Sign in first!'){
               $("#alert_fail").text(output.success).fadeIn();
@@ -173,10 +172,8 @@
             @php $newprice = $product->price - (($product->promotion / 100) * $product->price); @endphp
             <span class="fs-3 fw-semibold">${{ $newprice }}</span>
             <span class="price-old">${{ $product->price }}</span>
-            <input type="number" id="prodPrice" value="{{ $newprice }}" style="display:none">
           @else
             <span class="fs-3 fw-semibold">${{ $product->price }}</span>
-            <input type="number" id="prodPrice" value="{{ $product->price }}" style="display:none">
           @endif
         </div>
 

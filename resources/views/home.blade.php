@@ -314,7 +314,6 @@
               @else
                 <strong>${{ $p->price }}</strong>
               @endif
-              <input type="hidden" id="prodPrice_{{ $p->id }}" value="{{ $newprice }}">
             </div>
             <div class="card-footer bg-white border-0 pt-0 d-flex align-items-center gap-2">
               <button type="button" class="btn btn-sm btn-dark" onclick="addToCart({{ $p->id }})"><i class="bi bi-cart-plus"></i> Add to cart</button>
@@ -467,7 +466,7 @@
   }
 
   function addToCart(id) {
-    $.post("{{ route('addToCart') }}", { id: id, price: $("#prodPrice_" + id).val() }, function (output) {
+    $.post("{{ route('addToCart') }}", { id: id }, function (output) {
       if (output.success == 'Item added!') {
         $("#added_" + id).fadeOut(100).fadeIn();
       } else {

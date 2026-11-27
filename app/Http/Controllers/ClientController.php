@@ -388,7 +388,8 @@ class ClientController extends Controller
       $request->validate(['id' => 'required|integer|exists:product,id']);
       // Stored as a string: increase/decrease/removeFromCart compare ids with ===.
       $id=(string)(int)$request->id;
-      $price=$request->price;
+      // The price always comes from the database, never from the request.
+      $price=Product::findOrFail($id)->finalPrice();
       $item = ['id' => $id, 'quantity' => 1, 'price' => $price];
       Session::push('items', $item);
       Session::save();
@@ -414,7 +415,8 @@ class ClientController extends Controller
       // Stored as a string: increase/decrease/removeFromCart compare ids with ===.
       $id=(string)(int)$request->productId;
       $quantity=(int)$request->quantity;
-      $price=$request->price;
+      // The price always comes from the database, never from the request.
+      $price=Product::findOrFail($id)->finalPrice();
       $item = ['id' => $id, 'quantity' => $quantity, 'price' => $price];
       Session::push('items', $item);
       Session::save();
