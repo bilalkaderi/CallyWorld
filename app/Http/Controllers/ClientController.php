@@ -377,20 +377,6 @@ class ClientController extends Controller
       session()->forget('items.'.$index);
       Session::save();
 
-      $transaction_id = $cart->id;
-      $client_name = $c->name;
-      $cart_items = json_encode($items);
-      $total_price = $total_amount;
-      $address = $request->address;
-      $payment_date = $dt->format('Y-m-d');
-
-   // Execute the Python script
-      $python_script_path = ('C:\Users\lenovo\PycharmProjects\pythonProject\HelloWorld\demo.py');
-      $command = "python {$python_script_path} --transaction_id={$transaction_id} --client_name={$client_name} --cart_items='{$cart_items}' --total_price={$total_price} --address='{$address}' --payment_date={$payment_date}";
-      // $command = "python {$python_script_path} --transaction_id={$transaction_id}";
-      // $output = [];
-      $output = shell_exec($command);
-
       return response()->json([
         'success' =>'added'
       ]);
