@@ -129,7 +129,6 @@ function decrease(id){
       $.ajaxSetup({
           headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
       });
-      var total_amount=$("#totalPrice").val();
       var date=Number($("#date").val())+1;
       var paymentMethod=$("#paymentMethod").val();
       var address=$("#address").val();
@@ -142,7 +141,7 @@ function decrease(id){
         $.ajax({
             url:"{{route('orderCart')}}",
             method:'post',
-            data: {date:date, total_amount:total_amount, paymentMethod:paymentMethod, address:address},
+            data: {date:date, paymentMethod:paymentMethod, address:address},
             success: function(output){
               location.reload();
                 // $("#prodrate_"+id).fadeOut();
@@ -953,7 +952,6 @@ function decrease(id){
                               <label for="cvv">CVV</label>
                               <input type="text" class="form-control" id="cvv" placeholder="CVV" name="cardCVV" required>
                             </div>
-                            <input type="text" style="display:none" value="{{$total}}" id="amountPayment" name="amountPayment">
                           </div>
                           <strong>Delivery Address:</strong>
                           <input type="text" name="addressClient" value="{{$client->address}}" id="addressClient" placeholder="Preferred Delivery Address" class="form-control">

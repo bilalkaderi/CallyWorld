@@ -20,6 +20,7 @@ use App\Models\Cart;
 use App\Models\Favorite;
 use App\Models\Comment;
 use App\Models\Productrate;
+use App\Services\CartCheckout;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -270,111 +271,21 @@ class ClientController extends Controller
     }
   }
   public function orderCart(Request $request){
-      $items=session('items');
-      $email=session('clientemail');
-      $c=Client::where('email','=',$email)->first();
-
-      $total_amount=$request->total_amount;
-      $paymentMethod=$request->paymentMethod;
-      $date=$request->date;
-      $dt=now()->addDays($date);
-      $cart=new Cart();
-      $cart->clientId =$c->id;
-      $cart->items = json_encode($items);
-      $cart->status = 'Registered';
-      $cart->total_amount=$total_amount;
-      $cart->pref_address=$request->address;
-      $cart->payment_method=$paymentMethod;
-      $cart->expecting_delivery_date=$dt;
-      $cart->save();
-      session()->pull('items');
-
-      foreach($items as $key => $item) {
-        $id=$item['id'];
-        $quantity=$item['quantity'];
-        $price=$item['price'];
-        $p=Product::find($id);
-        // $price=$p->price;
-        // $prom=$p->promotion;
-
-        if($p->our_stock<$quantity)
-        {
-            $st=$p->our_stock;
-            $requestedQty=$quantity-$st;
-            $order=new Order();
-            $order->productId=$id;
-            $order->cartId=$cart->id;
-            $order->clientId=$c->id;
-            $order->userId=$p->userId;
-            $order->quantity=$requestedQty;
-            // if($prom > 0){
-            //   $newpr=$price-(($prom/100)*$price);
-            //   $order->total_price=$newpr*$quantity;
-            // }
-            // else{
-            $order->total_price=$price*$requestedQty;
-            // }
-            $order->status='pending';
-            $order->visible='yes';
-            $order->expecting_delivery_date=$dt;
-            $order->save();
-
-            $order2=new Order();
-            $order2->productId=$id;
-            $order2->cartId=$cart->id;
-            $order2->clientId=$c->id;
-            $order2->userId=$p->userId;
-            $order2->quantity=$st;
-            // if($prom > 0){
-            //   $newpr=$price-(($prom/100)*$price);
-            //   $order->total_price=$newpr*$quantity;
-            // }
-            // else{
-            $order2->total_price=$price*$st;
-            // }
-            $order2->status='Delivered';
-            $order2->visible='no';
-            $order2->expecting_delivery_date= now()->format('Y-m-d');
-            $order2->save();
-
-
-        }
-        elseif($p->our_stock >= $quantity){
-          $dt=now()->format('Y-m-d');
-          $order=new Order();
-          $order->productId=$id;
-          $order->cartId=$cart->id;
-          $order->clientId=$c->id;
-          $order->userId=$p->userId;
-          $order->quantity=$quantity;
-          // if($prom > 0){
-          //   $newpr=$price-(($prom/100)*$price);
-          //   $order->total_price=$newpr*$quantity;
-          // }
-          // else{
-          $order->total_price=$price*$quantity;
-          // }
-          $order->status='Delivered';
-          $order->visible='no';
-          $order->expecting_delivery_date=$dt;
-          $order->save();
-        }
+      $c=Client::where('email','=',session('clientemail'))->first();
+      if(!$c){
+        return response()->json(['success' =>'Sign in first!']);
       }
 
-
-
-
-
-      session()->put('items', [    ['id' => '0', 'quantity' => 0, 'price' => 0],  ]);
-      $items = session('items');
-      foreach($items as $key => $item) {
-          if ($item['id'] === '0') {
-              $index = $key;
-              break;
-          }
+      // Totals are computed from the product table; the browser only says what's in the cart.
+      $checkout=new CartCheckout(session('items'));
+      if($checkout->isEmpty()){
+        return response()->json(['success' =>'Your cart is empty.']);
       }
 
-      session()->forget('items.'.$index);
+      $dt=now()->addDays((int)$request->date);
+      $checkout->place($c, (string)$request->paymentMethod, $request->address, $dt);
+
+      session()->put('items', []);
       Session::save();
 
       return response()->json([
