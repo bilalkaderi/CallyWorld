@@ -187,6 +187,12 @@ class UserController extends Controller
     }
 
     public function confirmOrder(Request $request){
+        // The delivery date is required; an empty one used to crash the save.
+        if(!$request->filled('delTime') || strtotime($request->delTime) === false){
+          return response()->json([
+            'error' =>'Pick a delivery date before confirming the order.'
+          ]);
+        }
         $o = Order::find($request->id);
         if($o != null){
           $product = Product::find($o->productId);
@@ -196,8 +202,8 @@ class UserController extends Controller
           if($product != null){
             $product->soldno = $product->soldno + 1;
             $product->stock = $product->stock - $o->quantity;
+            $product->save();
           }
-          $product->save();
         }
         return response()->json([
           'success' =>'Order Confirmed'

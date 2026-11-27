@@ -862,12 +862,16 @@
    $.ajaxSetup({
        headers:{'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
    });
-   var delTime=$("#delTime").val();
+   var delTime=$("#delTime_"+id).val();
      $.ajax({
          url:"{{ route('confirmOrder') }}",
          method:'POST',
          data: {id:id,delTime:delTime},
          success: function(output){
+           if(output.error){
+             alert(output.error);
+             return;
+           }
            $("#modalUser"+id).fadeOut();
              $("#alertConfirm_"+id).text('');
              $("#alertConfirm_"+id).append(output.success);
@@ -1445,7 +1449,7 @@
                                                <div class="d-flex justify-content-between">
                                                  <p><a class="text-dark">Delivery Date:</a></p>
                                                  <p class="text-dark">
-                                                   <input type="date" class="form-control" id="delTime" name="" value="{{$o->expecting_delivery_date}}"></p>
+                                                   <input type="date" class="form-control" id="delTime_{{$o->id}}" name="" value="{{ $o->expecting_delivery_date ? \Carbon\Carbon::parse($o->expecting_delivery_date)->format('Y-m-d') : '' }}"></p>
                                                </div>@endif
                                              </div>
                                              <hr class="my-0" />
